@@ -1,18 +1,18 @@
-import "dotenv/config";
 import express from "express";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "./generated/prisma/index.js";
+import routes from "./routes/index.js";
+import errorMiddleware from "./middlewares/error.middleware.js";
+import { bigintMiddleware } from "./middlewares/bigint.middleware.js";
 
 const app = express();
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
 
 app.use(express.json());
 
-app.get("/", async (req, res) => {
-    res.json("Funcionando")
-})
+// Para convertir ids de usuarios a String
+app.use(bigintMiddleware)
 
-app.listen(3000, () => {
-    console.log("Servidor backend corriendo en http://localhost:3000")
-})
+app.use('/api', routes);
+
+// Manejar error 500
+app.use(errorMiddleware);
+
+export default app;
