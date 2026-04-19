@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model adjuntos {
+  id                  BigInt              @id @default(autoincrement())
+  orden_produccion_id BigInt?
+  nombre_archivo      String
+  tipo_archivo        String?
+  contenido           Bytes?
+  ruta_archivo        String?
+  fecha_subida        DateTime?           @default(now()) @db.Timestamptz(6)
+  usuario_subida_id   BigInt?
+  ordenes_produccion  ordenes_produccion? @relation(fields: [orden_produccion_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usuarios            usuarios?           @relation(fields: [usuario_subida_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model configuracion {
+  id          BigInt    @id @default(autoincrement())
+  clave       String    @unique
+  valor       String
+  descripcion String?
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model entregas_producto {
+  id                  BigInt              @id @default(autoincrement())
+  orden_produccion_id BigInt?
+  fecha_hora_entrega  DateTime?           @default(now()) @db.Timestamptz(6)
+  cantidad_entregada  Int
+  responsable_id      BigInt?
+  observaciones       String?
+  ordenes_produccion  ordenes_produccion? @relation(fields: [orden_produccion_id], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  usuarios            usuarios?           @relation(fields: [responsable_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model materia_prima {
+  id                     BigInt                   @id @default(autoincrement())
+  nombre                 String
+  descripcion            String?
+  cantidad_disponible    Decimal                  @default(0) @db.Decimal(12, 2)
+  unidad_medida          String?                  @default("unidad")
+  stock_minimo           Decimal?                 @default(0) @db.Decimal(12, 2)
+  stock_maximo           Decimal?                 @default(999999) @db.Decimal(12, 2)
+  fecha_vencimiento      DateTime?                @db.Date
+  estado_inventario      String?                  @default("activo")
+  created_at             DateTime?                @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime?                @default(now()) @db.Timestamptz(6)
+  movimientos_inventario movimientos_inventario[]
+  recetas                recetas[]
+
+  @@index([fecha_vencimiento], map: "idx_materia_prima_vencimiento")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model movimientos_inventario {
+  id                  BigInt         @id @default(autoincrement())
+  materia_prima_id    BigInt?
+  tipo_movimiento     String
+  cantidad            Decimal        @db.Decimal(12, 2)
+  fecha_movimiento    DateTime?      @default(now()) @db.Timestamptz(6)
+  usuario_id          BigInt?
+  orden_produccion_id BigInt?
+  observaciones       String?
+  materia_prima       materia_prima? @relation(fields: [materia_prima_id], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  usuarios            usuarios?      @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([fecha_movimiento], map: "idx_movimientos_fecha")
+  @@index([materia_prima_id], map: "idx_movimientos_materia")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model notificaciones {
+  id             BigInt    @id @default(autoincrement())
+  usuario_id     BigInt?
+  mensaje        String
+  leida          Boolean?  @default(false)
+  fecha_creacion DateTime? @default(now()) @db.Timestamptz(6)
+  tipo           String?
+  referencia_id  BigInt?
+  usuarios       usuarios? @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([usuario_id, leida], map: "idx_notificaciones_usuario")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model ordenes_produccion {
+  id                   BigInt                 @id @default(autoincrement())
+  producto_id          BigInt?
+  cantidad_solicitada  Int
+  fecha_requerida      DateTime               @db.Date
+  fecha_creacion       DateTime?              @default(now()) @db.Timestamptz(6)
+  estado               String?                @default("pendiente")
+  usuario_creador_id   BigInt?
+  observaciones        String?
+  notificado_bodega    Boolean?               @default(false)
+  fecha_cancelacion    DateTime?              @db.Timestamptz(6)
+  adjuntos             adjuntos[]
+  entregas_producto    entregas_producto[]
+  productos            productos?             @relation(fields: [producto_id], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  usuarios             usuarios?              @relation(fields: [usuario_creador_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  registro_produccion  registro_produccion[]
+  trazabilidad_proceso trazabilidad_proceso[]
+
+  @@index([estado], map: "idx_ordenes_estado")
+  @@index([fecha_creacion], map: "idx_ordenes_fecha_creacion")
+  @@index([fecha_requerida], map: "idx_ordenes_fecha_requerida")
+}
+
+model productos {
+  id                 BigInt               @id @default(autoincrement())
+  nombre             String
+  descripcion        String?
+  unidad_medida      String?              @default("unidad")
+  costo_estimado     Decimal?             @db.Decimal(10, 2)
+  created_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  ordenes_produccion ordenes_produccion[]
+  recetas            recetas[]
+}
+
+model recetas {
+  id                 BigInt         @id @default(autoincrement())
+  producto_id        BigInt?
+  ingrediente_id     BigInt?
+  cantidad_necesaria Decimal        @db.Decimal(12, 2)
+  unidad_medida      String
+  created_at         DateTime?      @default(now()) @db.Timestamptz(6)
+  materia_prima      materia_prima? @relation(fields: [ingrediente_id], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  productos          productos?     @relation(fields: [producto_id], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@index([producto_id], map: "idx_recetas_producto")
+}
+
+model registro_produccion {
+  id                      BigInt              @id @default(autoincrement())
+  orden_produccion_id     BigInt?
+  fecha_inicio            DateTime?           @db.Timestamptz(6)
+  fecha_fin               DateTime?           @db.Timestamptz(6)
+  cantidad_real_producida Int
+  incidencias             String?
+  responsable_id          BigInt?
+  created_at              DateTime?           @default(now()) @db.Timestamptz(6)
+  ordenes_produccion      ordenes_produccion? @relation(fields: [orden_produccion_id], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  usuarios                usuarios?           @relation(fields: [responsable_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model roles {
+  id          BigInt     @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  created_at  DateTime?  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime?  @default(now()) @db.Timestamptz(6)
+  usuarios    usuarios[]
+}
+
+model trazabilidad_proceso {
+  id                  BigInt              @id @default(autoincrement())
+  orden_produccion_id BigInt?
+  etapa               String
+  responsable_id      BigInt?
+  accion_realizada    String
+  observaciones       String?
+  fecha_hora          DateTime?           @default(now()) @db.Timestamptz(6)
+  ordenes_produccion  ordenes_produccion? @relation(fields: [orden_produccion_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usuarios            usuarios?           @relation(fields: [responsable_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([orden_produccion_id], map: "idx_trazabilidad_orden")
+}
+
+model usuarios {
+  id                     BigInt                   @id @default(autoincrement())
+  nombre_completo        String
+  numero_identificacion  String?                  @unique
+  correo                 String                   @unique
+  contrasena_hash        String
+  rol_id                 BigInt?
+  activo                 Boolean?                 @default(true)
+  fecha_creacion         DateTime?                @default(now()) @db.Timestamptz(6)
+  ultimo_acceso          DateTime?                @db.Timestamptz(6)
+  adjuntos               adjuntos[]
+  entregas_producto      entregas_producto[]
+  movimientos_inventario movimientos_inventario[]
+  notificaciones         notificaciones[]
+  ordenes_produccion     ordenes_produccion[]
+  registro_produccion    registro_produccion[]
+  trazabilidad_proceso   trazabilidad_proceso[]
+  roles                  roles?                   @relation(fields: [rol_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([correo], map: "idx_usuarios_correo")
+  @@index([rol_id], map: "idx_usuarios_rol")
+}
