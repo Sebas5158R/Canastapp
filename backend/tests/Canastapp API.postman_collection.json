@@ -1,0 +1,200 @@
+{
+  "info": {
+    "_postman_id": "8f6c3f11-0c33-4a7b-8d72-0f8f8f9c3c2c",
+    "name": "Canastapp API",
+    "description": "Coleccion para probar los endpoints del backend de Canastapp.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inventario",
+      "item": [
+        {
+          "name": "Materia prima",
+          "item": [
+            {
+              "name": "Listar materia prima",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/inventario/materia-prima",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["inventario", "materia-prima"]
+                }
+              }
+            },
+            {
+              "name": "Obtener materia prima por id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/inventario/materia-prima/{{materiaPrimaId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["inventario", "materia-prima", "{{materiaPrimaId}}"]
+                }
+              }
+            },
+            {
+              "name": "Crear materia prima",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Azucar\",\n  \"descripcion\": \"Azucar blanca refinada\",\n  \"cantidad_disponible\": 100,\n  \"unidad_medida\": \"kg\",\n  \"stock_minimo\": 10,\n  \"stock_maximo\": 500,\n  \"fecha_vencimiento\": \"2026-12-31\",\n  \"estado_inventario\": \"activo\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/inventario/materia-prima",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["inventario", "materia-prima"]
+                }
+              }
+            },
+            {
+              "name": "Actualizar materia prima",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"descripcion\": \"Azucar blanca refinada para produccion\",\n  \"stock_minimo\": 20\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/inventario/materia-prima/{{materiaPrimaId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["inventario", "materia-prima", "{{materiaPrimaId}}"]
+                }
+              }
+            },
+            {
+              "name": "Eliminar materia prima",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/inventario/materia-prima/{{materiaPrimaId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["inventario", "materia-prima", "{{materiaPrimaId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Movimientos",
+          "item": [
+            {
+              "name": "Listar movimientos",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/inventario/movimientos",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["inventario", "movimientos"]
+                }
+              }
+            },
+            {
+              "name": "Obtener movimiento por id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/inventario/movimientos/{{movimientoId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["inventario", "movimientos", "{{movimientoId}}"]
+                }
+              }
+            },
+            {
+              "name": "Crear movimiento de entrada",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"materia_prima_id\": 1,\n  \"tipo_movimiento\": \"entrada\",\n  \"cantidad\": 25,\n  \"usuario_id\": 1,\n  \"orden_produccion_id\": null,\n  \"observaciones\": \"Ingreso inicial de inventario\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/inventario/movimientos",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["inventario", "movimientos"]
+                }
+              }
+            },
+            {
+              "name": "Crear movimiento de salida",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"materia_prima_id\": 1,\n  \"tipo_movimiento\": \"salida\",\n  \"cantidad\": 5,\n  \"usuario_id\": 1,\n  \"orden_produccion_id\": 1,\n  \"observaciones\": \"Salida para produccion\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/inventario/movimientos",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["inventario", "movimientos"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "materiaPrimaId",
+      "value": "1"
+    },
+    {
+      "key": "movimientoId",
+      "value": "1"
+    }
+  ]
+}
