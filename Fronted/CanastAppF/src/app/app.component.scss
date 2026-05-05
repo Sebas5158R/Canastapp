@@ -1,0 +1,332 @@
+/* ════════════════════════════════════════════════════════════
+   CANASTAPP — Menú lateral
+   Paleta: azul claro → blanco | bordes rectos | tipografía Arial
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Variables globales del menú ── */
+:host {
+  --menu-width: 280px;
+  --menu-bg: #f0f6fc;
+  --menu-border: #c7dff0;
+  --menu-shadow: 0 0 20px rgba(18, 82, 140, 0.12);
+
+  /* Paleta fría */
+  --color-primary: #1a6fb5;
+  --color-primary-mid: #2d8fd6;
+  --color-primary-light: #a8d4f0;
+  --color-accent: #0d4f8a;
+  --color-surface: #ffffff;
+  --color-surface-hover: #e4f1fb;
+  --color-border: #c7dff0;
+  --color-text-strong: #0d2d4a;
+  --color-text-mid: #2c5f8a;
+  --color-text-soft: #6b9bc0;
+  --color-status-on: #27ae60;
+
+  /* Tipografía */
+  --font-main: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
+
+  /* Espaciado */
+  --radius: 0px;          /* bordes 100% rectos */
+  --nav-item-h: 50px;
+}
+
+/* ════════════ COMPONENTE ION-MENU ════════════ */
+.canastapp-menu {
+  --width: var(--menu-width);
+  --background: var(--menu-bg);
+  --box-shadow: var(--menu-shadow);
+  border-right: 2px solid var(--menu-border);
+  font-family: var(--font-main);
+}
+
+/* ════════════ HEADER ════════════ */
+.menu-header {
+  --background: var(--color-primary);
+  --border-width: 0;
+
+  ion-toolbar {
+    --background: transparent;
+    --border-style: none;
+  }
+}
+
+.menu-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 18px 20px;
+  background: linear-gradient(145deg, var(--color-accent) 0%, var(--color-primary) 60%, var(--color-primary-mid) 100%);
+  position: relative;
+}
+
+/* Avatar */
+.avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.user-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 0px;               /* recto */
+  border: 2.5px solid rgba(255,255,255,0.55);
+  object-fit: cover;
+  display: block;
+  background-color: var(--color-primary-light);
+}
+
+.status-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 0px;               /* recto */
+  background: var(--color-status-on);
+  border: 2px solid var(--color-primary);
+}
+
+/* Info de usuario */
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  margin: 3px 0 0;
+  font-family: var(--font-main);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+}
+
+/* Botón de configuración */
+.settings-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  border-radius: 0px;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+  flex-shrink: 0;
+  padding: 0;
+
+  ion-icon {
+    font-size: 17px;
+    color: rgba(255,255,255,0.85);
+  }
+
+  &:hover,
+  &:active {
+    background: rgba(255,255,255,0.22);
+    border-color: rgba(255,255,255,0.55);
+  }
+}
+
+/* Divisor debajo del header */
+.header-divider {
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary-mid), var(--color-primary-light));
+}
+
+/* ════════════ CONTENIDO / NAV ════════════ */
+.menu-content {
+  --background: var(--menu-bg);
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+/* Etiqueta de sección */
+.nav-section-label {
+  margin: 20px 18px 8px;
+  font-family: var(--font-main);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: var(--color-text-soft);
+}
+
+/* Lista de navegación */
+.menu-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 10px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  height: var(--nav-item-h);
+  padding: 0 12px;
+  gap: 13px;
+  border-radius: 0px;               /* recto */
+  cursor: pointer;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: var(--color-surface-hover);
+    border-left-color: var(--color-primary-light);
+
+    .nav-label {
+      color: var(--color-primary);
+    }
+
+    .nav-icon-wrap {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .nav-arrow {
+      opacity: 1;
+    }
+  }
+
+  &.active {
+    background: linear-gradient(90deg, #daeef9 0%, #f0f6fc 100%);
+    border-left: 3px solid var(--color-primary);
+
+    .nav-label {
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+
+    .nav-icon-wrap {
+      background: var(--color-primary);
+      color: #ffffff;
+    }
+
+    .nav-arrow {
+      opacity: 1;
+      color: var(--color-primary);
+    }
+  }
+}
+
+/* Ícono del ítem */
+.nav-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 0px;
+  background: var(--color-border);
+  color: var(--color-text-mid);
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+/* Texto del ítem */
+.nav-label {
+  flex: 1;
+  font-family: var(--font-main);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--color-text-strong);
+  transition: color 0.15s ease;
+}
+
+/* Flecha derecha */
+.nav-arrow {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  color: var(--color-text-soft);
+  transition: opacity 0.15s ease;
+
+  ion-icon {
+    font-size: 14px;
+  }
+}
+
+/* ════════════ FOOTER ════════════ */
+.menu-footer {
+  --background: var(--menu-bg);
+  --border-width: 0;
+
+  ion-toolbar {
+    --background: transparent;
+    --border-style: none;
+  }
+}
+
+.footer-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 0 14px 14px;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: calc(100% - 20px);
+  margin: 0 10px;
+  padding: 11px 14px;
+  background: transparent;
+  border: 1.5px solid var(--color-border);
+  border-radius: 0px;
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-mid);
+  letter-spacing: 0.3px;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  ion-icon {
+    font-size: 17px;
+  }
+
+  &:hover,
+  &:active {
+    background: #fdecea;
+    color: #c0392b;
+    border-color: #e8b4b0;
+  }
+}
+
+.app-version {
+  margin: 10px 0 16px;
+  text-align: center;
+  font-family: var(--font-main);
+  font-size: 10px;
+  color: var(--color-text-soft);
+  letter-spacing: 0.5px;
+}
+
+/* ════════════ HOME: botón hamburguesa ════════════ */
+/* Estilos que se aplican al ion-menu-button dentro del home */
+ion-menu-button {
+  --color: var(--color-primary);
+  --border-radius: 0px;
+}

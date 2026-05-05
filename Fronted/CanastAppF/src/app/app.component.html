@@ -1,3 +1,43 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+
+  <!-- ═══════════════════════════════════════ MENÚ LATERAL ═══════════════════════════════════════ -->
+ <ion-menu contentId="main-content" side="start" type="overlay" class="canastapp-menu">
+
+  <!-- Cambia ion-header por un div simple -->
+  <div class="menu-header">
+    <div class="menu-user-card">
+      <div class="avatar-wrapper">
+        <img [src]="userAvatar" alt="Foto de usuario" class="user-avatar"/>
+        <span class="status-dot"></span>
+      </div>
+      <div class="user-info">
+        <p class="user-name">{{ userName }}</p>
+        <p class="user-role">{{ userRole }}</p>
+      </div>
+      <button class="settings-btn" (click)="goToSettings()">
+        <ion-icon name="settings-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="header-divider"></div>
+  </div>
+
+  <ion-content class="menu-content">
+    ...
+  </ion-content>
+
+  <!-- Cambia ion-footer por un div simple -->
+  <div class="menu-footer">
+    <div class="footer-divider"></div>
+    <button class="logout-btn" (click)="logout()">
+      <ion-icon name="log-out-outline"></ion-icon>
+      <span>Cerrar sesión</span>
+    </button>
+    <p class="app-version">Canastapp v1.0.0</p>
+  </div>
+
+</ion-menu>
+
+  <!-- ═════════════════════════════════════ CONTENIDO PRINCIPAL ════════════════════════════════════ -->
+  <ion-router-outlet id="main-content"></ion-router-outlet>
+
 </ion-app>

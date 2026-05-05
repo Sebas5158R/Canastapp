@@ -1,20 +1,38 @@
-<ion-header [translucent]="true">
+<ion-header class="home-header">
   <ion-toolbar>
-    <ion-title>
-      Blank
+
+    <!-- Botón para abrir el menú lateral -->
+    <ion-buttons slot="start">
+      <!-- autoHide="false" fuerza que el botón aparezca aunque no haya menú detectado -->
+<ion-menu-button autoHide="false" menu="start"></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title class="home-title">
+      <span class="title-brand">Canastapp</span>
     </ion-title>
+
+    <!-- Acciones rápidas en el header -->
+    <ion-buttons slot="end">
+      <ion-button class="header-action-btn" title="Notificaciones">
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="home-content" [fullscreen]="true">
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <!--
+    ══════════════════════════════════════
+    DASHBOARD — se completará en el siguiente paso
+    ══════════════════════════════════════
+    Por ahora se muestra un placeholder limpio.
+  -->
+  <div class="dashboard-placeholder">
+    <ion-icon name="grid-outline" class="placeholder-icon"></ion-icon>
+    <h2 class="placeholder-title">Dashboard</h2>
+    <p class="placeholder-sub">El contenido del panel se agregará próximamente.</p>
   </div>
+
 </ion-content>
