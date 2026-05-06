@@ -1,14 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
-import { MenuController } from '@ionic/angular/standalone';
 import { filter } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
-import {IonApp, IonMenu,IonContent,IonIcon,IonRouterOutlet,
+import {
+  IonApp,
+  IonMenu,
+  IonContent,
+  IonIcon,
+  IonRouterOutlet,
+  MenuController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { gridOutline, cubeOutline, layersOutline, documentTextOutline,timeOutline,settingsOutline,chevronForwardOutline, logOutOutline,notificationsOutline,menuOutline,
+import {
+  gridOutline, cubeOutline, layersOutline, documentTextOutline,
+  timeOutline, settingsOutline, chevronForwardOutline,
+  logOutOutline, notificationsOutline, menuOutline,
 } from 'ionicons/icons';
-
 
 export interface MenuItem {
   label: string;
@@ -26,10 +33,7 @@ export interface MenuItem {
     RouterModule,
     IonApp,
     IonMenu,
- 
-    
     IonContent,
-   
     IonIcon,
     IonRouterOutlet,
   ],

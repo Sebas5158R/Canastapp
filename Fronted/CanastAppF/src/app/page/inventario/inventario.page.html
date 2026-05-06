@@ -1,0 +1,126 @@
+<ion-header class="page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="page-title">Inventario</ion-title>
+    <ion-buttons slot="end">
+      <button class="add-btn" (click)="toggleFormulario()" [class.active]="formularioVisible">
+        <ion-icon [name]="formularioVisible ? 'close-outline' : 'add-circle-outline'"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="page-content">
+  <div class="content-wrapper">
+
+    <!-- Formulario desplegable nueva materia prima -->
+    <div class="form-panel" [class.visible]="formularioVisible">
+      <div class="form-inner">
+        <h3 class="form-title">Nueva materia prima</h3>
+
+        <div class="form-grid">
+
+          <div class="field full">
+            <label class="field-label">Nombre <span class="required">*</span></label>
+            <input class="field-input" [(ngModel)]="nuevaMateria.nombre" placeholder="Ej. Harina integral" />
+          </div>
+
+          <div class="field full">
+            <label class="field-label">Descripción</label>
+            <input class="field-input" [(ngModel)]="nuevaMateria.descripcion" placeholder="Opcional" />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Cantidad inicial</label>
+            <input class="field-input" type="number" [(ngModel)]="nuevaMateria.cantidad_disponible" min="0" />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Unidad de medida</label>
+            <select class="field-select" [(ngModel)]="nuevaMateria.unidad_medida">
+              <option *ngFor="let u of unidades" [value]="u">{{ u }}</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Stock mínimo</label>
+            <input class="field-input" type="number" [(ngModel)]="nuevaMateria.stock_minimo" min="0" />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Stock máximo</label>
+            <input class="field-input" type="number" [(ngModel)]="nuevaMateria.stock_maximo" min="0" />
+          </div>
+
+          <div class="field full">
+            <label class="field-label">Fecha de vencimiento</label>
+            <input class="field-input" type="date" [(ngModel)]="nuevaMateria.fecha_vencimiento" />
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-cancel" (click)="toggleFormulario()">Cancelar</button>
+          <button class="btn-save" (click)="guardarMateria()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spinner -->
+    <div class="loading-state" *ngIf="cargando">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <!-- Tabla de materia prima -->
+    <div class="table-wrap" *ngIf="!cargando">
+
+      <!-- Encabezado -->
+      <div class="table-head">
+        <span class="col-name">Materia prima</span>
+        <span class="col-qty">Disponible</span>
+        <span class="col-status">Estado</span>
+      </div>
+
+      <!-- Filas -->
+      <div
+        class="table-row"
+        *ngFor="let m of materias; trackBy: trackById"
+        [class.critico]="m.estado_stock === 'CRÍTICO'"
+      >
+        <div class="col-name">
+          <p class="mat-name">{{ m.nombre }}</p>
+          <p class="mat-meta">Mín: {{ m.stock_minimo }} | Máx: {{ m.stock_maximo }} {{ m.unidad_medida }}</p>
+          <p class="mat-vence" *ngIf="m.fecha_vencimiento">
+            Vence: {{ m.fecha_vencimiento | date:'dd/MM/yyyy' }}
+          </p>
+        </div>
+
+        <div class="col-qty">
+          <span class="qty-value">{{ m.cantidad_disponible }}</span>
+          <span class="qty-unit">{{ m.unidad_medida }}</span>
+        </div>
+
+        <div class="col-status">
+          <span class="status-chip" [ngClass]="m.estado_stock.toLowerCase()">
+            <ion-icon
+              [name]="m.estado_stock === 'CRÍTICO' ? 'alert-circle-outline'
+                    : m.estado_stock === 'EXCESO' ? 'warning-outline'
+                    : 'checkmark-circle-outline'"
+            ></ion-icon>
+            {{ m.estado_stock }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Sin datos -->
+      <div class="empty-state" *ngIf="materias.length === 0">
+        <ion-icon name="layers-outline" class="empty-icon"></ion-icon>
+        <p class="empty-text">Sin materia prima registrada</p>
+      </div>
+
+    </div>
+
+  </div>
+</ion-content>

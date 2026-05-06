@@ -1,0 +1,58 @@
+<ion-app>
+
+  <ion-menu contentId="main-content" side="start" type="overlay" class="canastapp-menu">
+
+    <!-- Cabecera — div puro, sin ion-header ni ion-toolbar -->
+    <div class="menu-header">
+      <div class="menu-user-card">
+        <div class="avatar-wrapper">
+          <img [src]="userAvatar" alt="Foto de usuario" class="user-avatar"/>
+          <span class="status-dot"></span>
+        </div>
+        <div class="user-info">
+          <p class="user-name">{{ userName }}</p>
+          <p class="user-role">{{ userRole }}</p>
+        </div>
+        <button class="settings-btn" (click)="goToSettings()" title="Configuración">
+          <ion-icon name="settings-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="header-divider"></div>
+    </div>
+
+    <!-- Navegación — ion-content es válido dentro de ion-menu -->
+    <ion-content class="menu-content">
+      <p class="nav-section-label">NAVEGACIÓN</p>
+      <nav class="menu-nav">
+        <a
+          *ngFor="let item of menuItems"
+          class="nav-item"
+          [class.active]="isActive(item.url)"
+          (click)="navigate(item.url)"
+        >
+          <span class="nav-icon-wrap">
+            <ion-icon [name]="item.icon"></ion-icon>
+          </span>
+          <span class="nav-label">{{ item.label }}</span>
+          <span class="nav-arrow">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </span>
+        </a>
+      </nav>
+    </ion-content>
+
+    <!-- Footer — div puro, sin ion-footer -->
+    <div class="menu-footer">
+      <div class="footer-divider"></div>
+      <button class="logout-btn" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Cerrar sesión</span>
+      </button>
+      <p class="app-version">Canastapp v1.0.0</p>
+    </div>
+
+  </ion-menu>
+
+  <ion-router-outlet id="main-content"></ion-router-outlet>
+
+</ion-app>

@@ -1,0 +1,250 @@
+$font:          'Arial', 'Helvetica Neue', Helvetica, sans-serif;
+$blue-dark:     #0d4f8a;
+$blue-mid:      #1a6fb5;
+$blue-light:    #a8d4f0;
+$border:        #c7dff0;
+$bg:            #f0f6fc;
+$surface:       #ffffff;
+$text-strong:   #0d2d4a;
+$text-mid:      #2c5f8a;
+$text-soft:     #6b9bc0;
+
+ion-header.page-header {
+  ion-toolbar {
+    --background: #{$surface};
+    --border-color: #{$border};
+    --border-width: 0 0 1px 0;
+    --padding-start: 4px;
+    --padding-end: 8px;
+  }
+  .search-toolbar {
+    --background: #{$surface};
+    --border-width: 0 0 2px 0;
+    --border-color: #{$border};
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-top: 0;
+    --padding-bottom: 6px;
+  }
+}
+
+.page-title {
+  font-family: $font;
+  font-size: 17px;
+  font-weight: 700;
+  color: $blue-dark;
+}
+
+.product-search {
+  --background: #{$bg};
+  --border-radius: 0;
+  --box-shadow: none;
+  --color: #{$text-strong};
+  --placeholder-color: #{$text-soft};
+  font-family: $font;
+  font-size: 13px;
+}
+
+.page-content { --background: #{$bg}; }
+
+.content-wrapper {
+  padding: 16px 12px;
+}
+
+/* ── Empty / Loading ── */
+.empty-state, .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 12px;
+}
+.empty-icon { font-size: 48px; color: $blue-light; }
+.empty-text { font-family: $font; font-size: 14px; color: $text-soft; }
+
+/* ── Grid de productos ── */
+.products-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Ficha de producto ── */
+.product-card {
+  background: $surface;
+  border: 1.5px solid $border;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+/* Foto centrada */
+.product-photo-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(160deg, #daeef9 0%, #f0f6fc 100%);
+  padding: 28px 0 20px;
+  border-bottom: 1px solid $border;
+}
+
+.product-photo-placeholder {
+  width: 90px;
+  height: 90px;
+  border-radius: 0;
+  background: $surface;
+  border: 2px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .photo-icon {
+    font-size: 42px;
+    color: $blue-light;
+  }
+}
+
+.product-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: $blue-mid;
+  color: #fff;
+  font-family: $font;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 0;
+}
+
+/* Info */
+.product-info {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid $border;
+}
+
+.product-name {
+  margin: 0 0 4px;
+  font-family: $font;
+  font-size: 16px;
+  font-weight: 700;
+  color: $text-strong;
+}
+
+.product-desc {
+  margin: 0 0 10px;
+  font-family: $font;
+  font-size: 12px;
+  color: $text-soft;
+  line-height: 1.5;
+}
+
+.product-meta {
+  display: flex;
+  gap: 14px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: $font;
+  font-size: 12px;
+  font-weight: 500;
+  color: $text-mid;
+
+  ion-icon { font-size: 13px; color: $blue-mid; }
+}
+
+/* Ingredientes desplegables */
+.ingredients-section {}
+
+.ingredients-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: $font;
+
+  &:active { background: $bg; }
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $blue-mid;
+
+  ion-icon { font-size: 15px; }
+}
+
+.ingredients-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: $blue-mid;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 0;
+}
+
+.toggle-arrow {
+  font-size: 20px;
+  color: $text-soft;
+  transition: transform 0.2s ease;
+  display: block;
+  line-height: 1;
+
+  &.open { transform: rotate(90deg); }
+}
+
+.ingredients-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+  background: $bg;
+  border-top: 1px solid transparent;
+
+  &.visible {
+    max-height: 400px;
+    border-top-color: $border;
+  }
+}
+
+.ingredient-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 16px;
+  border-bottom: 1px solid $border;
+  font-family: $font;
+
+  &:last-child { border-bottom: none; }
+}
+
+.ingredient-name {
+  font-size: 13px;
+  color: $text-strong;
+}
+
+.ingredient-qty {
+  font-size: 12px;
+  font-weight: 600;
+  color: $blue-mid;
+  background: $surface;
+  border: 1px solid $border;
+  padding: 2px 8px;
+  border-radius: 0;
+}
