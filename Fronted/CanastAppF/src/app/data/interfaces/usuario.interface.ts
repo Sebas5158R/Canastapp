@@ -11,7 +11,7 @@ export interface Usuario {
   nombre_completo: string;
   numero_identificacion?: string;
   correo: string;
-  rol_id: number;
+  rol_id?: number;
   rol?: Rol;
   activo: boolean;
   fecha_creacion?: string;
@@ -25,7 +25,9 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
-  usuario: Usuario;
+  token_type?: string;
+  expires_in?: string;
+  user: Usuario;
 }
 
 export interface CreateUsuarioRequest {

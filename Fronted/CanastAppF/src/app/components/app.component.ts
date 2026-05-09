@@ -16,6 +16,7 @@ import {
   timeOutline, settingsOutline, chevronForwardOutline,
   logOutOutline, notificationsOutline, menuOutline,
 } from 'ionicons/icons';
+import { UsuarioService } from '../data/services/usuario.service';
 
 export interface MenuItem {
   label: string;
@@ -40,11 +41,12 @@ export interface MenuItem {
 })
 export class AppComponent implements OnInit {
 
-  userName: string = 'Sebastián Rincón';
-  userRole: string = 'Administrador';
+  userName = 'Invitado';
+  userRole = 'Sin sesión';
   userAvatar: string = 'assets/images/default-avatar.png';
 
   activeUrl: string = '';
+  isAuthenticated = false;
 
   menuItems: MenuItem[] = [
     { label: 'Dashboard',            icon: 'grid-outline',          url: '/home' },
@@ -57,6 +59,7 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router,
     private menuCtrl: MenuController,
+    private usuarioService: UsuarioService,
   ) {
     addIcons({
       gridOutline, cubeOutline, layersOutline, documentTextOutline,
@@ -66,11 +69,26 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.syncAuthState();
+
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.activeUrl = event.urlAfterRedirects;
+        this.syncAuthState();
       });
+  }
+
+  get showMenu(): boolean {
+    return this.isAuthenticated && this.activeUrl !== '/login';
+  }
+
+  syncAuthState(): void {
+    this.isAuthenticated = this.usuarioService.estaAutenticado();
+
+    const usuario = this.usuarioService.getUsuarioActual();
+    this.userName = usuario?.nombre_completo || 'Invitado';
+    this.userRole = usuario?.rol?.nombre || 'Sin sesión';
   }
 
   isActive(url: string): boolean {
@@ -89,6 +107,7 @@ export class AppComponent implements OnInit {
 
   async logout(): Promise<void> {
     await this.menuCtrl.close();
+    this.usuarioService.logout();
     this.router.navigateByUrl('/login');
   }
 }

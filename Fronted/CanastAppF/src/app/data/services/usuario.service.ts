@@ -22,7 +22,7 @@ export class UsuarioService {
     return this.api.post<LoginResponse>('auth/login', credentials).pipe(
       tap((res) => {
         localStorage.setItem('token', res.token);
-        localStorage.setItem('usuario', JSON.stringify(res.usuario));
+        localStorage.setItem('usuario', JSON.stringify(res.user));
       })
     );
   }
