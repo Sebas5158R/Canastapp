@@ -1,0 +1,51 @@
+import { ROLES } from "./roles.constants.js";
+
+export const PERMISSIONS = {
+  VIEW_REPORTS: "view_reports",
+  MANAGE_USERS: "manage_users",
+  MANAGE_CONFIG: "manage_config",
+  MANAGE_ORDERS: "manage_orders",
+  MANAGE_RECIPES: "manage_recipes",
+  VIEW_PRODUCTION: "view_production",
+  REGISTER_PRODUCTION: "register_production",
+  PREPARE_WAREHOUSE: "prepare_warehouse",
+  REGISTER_DELIVERIES: "register_deliveries",
+  VIEW_INVENTORY: "view_inventory",
+  MANAGE_INVENTORY: "manage_inventory",
+  REGISTER_INVENTORY_MOVEMENTS: "register_inventory_movements",
+};
+
+export const ROLE_PERMISSIONS = {
+  [ROLES.ADMINISTRATIVO]: [
+    PERMISSIONS.VIEW_REPORTS,
+    PERMISSIONS.MANAGE_USERS,
+    PERMISSIONS.MANAGE_CONFIG,
+    PERMISSIONS.VIEW_INVENTORY,
+    PERMISSIONS.VIEW_PRODUCTION,
+    PERMISSIONS.MANAGE_INVENTORY,
+    PERMISSIONS.REGISTER_INVENTORY_MOVEMENTS,
+  ],
+  [ROLES.JEFE_PRODUCCION]: [
+    PERMISSIONS.MANAGE_ORDERS,
+    PERMISSIONS.MANAGE_RECIPES,
+    PERMISSIONS.VIEW_PRODUCTION,
+    PERMISSIONS.REGISTER_PRODUCTION,
+    PERMISSIONS.VIEW_INVENTORY,
+    PERMISSIONS.MANAGE_INVENTORY,
+    PERMISSIONS.REGISTER_INVENTORY_MOVEMENTS,
+  ],
+  [ROLES.AUXILIAR]: [
+    PERMISSIONS.PREPARE_WAREHOUSE,
+    PERMISSIONS.REGISTER_PRODUCTION,
+    PERMISSIONS.REGISTER_DELIVERIES,
+    PERMISSIONS.VIEW_INVENTORY,
+    PERMISSIONS.REGISTER_INVENTORY_MOVEMENTS,
+  ],
+};
+
+export const ALL_PERMISSIONS = Object.values(PERMISSIONS);
+
+export const getPermissionsForRole = (roleName) => ROLE_PERMISSIONS[roleName] ?? [];
+
+export const hasPermission = (roleName, permission) =>
+  getPermissionsForRole(roleName).includes(permission);
