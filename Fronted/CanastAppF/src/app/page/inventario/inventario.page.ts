@@ -11,6 +11,7 @@ import {
   checkmarkCircleOutline, warningOutline, menuOutline,
   layersOutline,
 } from 'ionicons/icons';
+import { MateriaPrimaService } from '../../data/services/materia-prima.service';
 import {
   MateriaPrima,
   CreateMateriaPrimaRequest,
@@ -37,17 +38,8 @@ export class InventarioPage implements OnInit {
 
   cargando = false;
   formularioVisible = false;
+  materias: MateriaPrimaVM[] = [];
 
-  /* Datos mock hasta que llegue la API */
-  materias: MateriaPrimaVM[] = [
-    { id: 1, nombre: 'Harina de trigo',  cantidad_disponible: 500, unidad_medida: 'kg',     stock_minimo: 50,  stock_maximo: 2000, fecha_vencimiento: '2025-12-31', estado_inventario: 'activo', estado_stock: 'NORMAL' },
-    { id: 2, nombre: 'Azúcar blanca',    cantidad_disponible: 30,  unidad_medida: 'kg',     stock_minimo: 30,  stock_maximo: 1500, fecha_vencimiento: '2025-10-15', estado_inventario: 'activo', estado_stock: 'CRÍTICO' },
-    { id: 3, nombre: 'Huevos',           cantidad_disponible: 1000,unidad_medida: 'unidad', stock_minimo: 100, stock_maximo: 5000, fecha_vencimiento: '2025-05-20', estado_inventario: 'activo', estado_stock: 'NORMAL' },
-    { id: 4, nombre: 'Levadura',         cantidad_disponible: 8,   unidad_medida: 'kg',     stock_minimo: 10,  stock_maximo: 200,  fecha_vencimiento: '2025-08-01', estado_inventario: 'activo', estado_stock: 'CRÍTICO' },
-    { id: 5, nombre: 'Sal',              cantidad_disponible: 2000,unidad_medida: 'kg',     stock_minimo: 15,  stock_maximo: 300,  fecha_vencimiento: '2026-01-10', estado_inventario: 'activo', estado_stock: 'EXCESO'  },
-  ];
-
-  /* Formulario nueva materia prima */
   nuevaMateria: CreateMateriaPrimaRequest = {
     nombre: '',
     descripcion: '',
@@ -60,14 +52,37 @@ export class InventarioPage implements OnInit {
 
   unidades = ['kg', 'g', 'l', 'ml', 'unidad', 'docena', 'caja'];
 
-  constructor() {
+  constructor(private materiaPrimaService: MateriaPrimaService) {
     addIcons({
       addCircleOutline, closeOutline, alertCircleOutline,
       checkmarkCircleOutline, warningOutline, menuOutline, layersOutline,
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.cargarMaterias();
+  }
+
+  cargarMaterias(): void {
+    this.cargando = true;
+    this.materiaPrimaService.getMateriaPrimas().subscribe({
+      next: (data: MateriaPrima[]) => {
+        this.materias = data.map((m) => ({
+          ...m,
+          estado_stock: this.calcularEstado(
+            m.cantidad_disponible,
+            m.stock_minimo,
+            m.stock_maximo,
+          ),
+        }));
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar materias:', err);
+        this.cargando = false;
+      },
+    });
+  }
 
   toggleFormulario(): void {
     this.formularioVisible = !this.formularioVisible;
@@ -84,25 +99,23 @@ export class InventarioPage implements OnInit {
   guardarMateria(): void {
     if (!this.nuevaMateria.nombre.trim()) return;
 
-    /* Mock: agregar al listado local; luego reemplazar con MateriaPrimaService.crearMateriaPrima() */
-    const nueva: MateriaPrimaVM = {
-      id: this.materias.length + 1,
-      nombre: this.nuevaMateria.nombre,
-      descripcion: this.nuevaMateria.descripcion,
-      cantidad_disponible: this.nuevaMateria.cantidad_disponible,
-      unidad_medida: this.nuevaMateria.unidad_medida,
-      stock_minimo: this.nuevaMateria.stock_minimo ?? 0,
-      stock_maximo: this.nuevaMateria.stock_maximo ?? 999999,
-      fecha_vencimiento: this.nuevaMateria.fecha_vencimiento,
-      estado_inventario: 'activo',
-      estado_stock: this.calcularEstado(
-        this.nuevaMateria.cantidad_disponible,
-        this.nuevaMateria.stock_minimo ?? 0,
-        this.nuevaMateria.stock_maximo ?? 999999,
-      ),
-    };
-    this.materias = [nueva, ...this.materias];
-    this.toggleFormulario();
+    this.materiaPrimaService.crearMateriaPrima(this.nuevaMateria).subscribe({
+      next: (creada: MateriaPrima) => {
+        const nueva: MateriaPrimaVM = {
+          ...creada,
+          estado_stock: this.calcularEstado(
+            creada.cantidad_disponible,
+            creada.stock_minimo,
+            creada.stock_maximo,
+          ),
+        };
+        this.materias = [nueva, ...this.materias];
+        this.toggleFormulario();
+      },
+      error: (err) => {
+        console.error('Error al guardar materia:', err);
+      },
+    });
   }
 
   calcularEstado(cantidad: number, min: number, max: number): EstadoStock {
