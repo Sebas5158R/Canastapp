@@ -318,6 +318,137 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Listar productos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/productos",
+              "host": ["{{baseUrl}}"],
+              "path": ["productos"]
+            }
+          }
+        },
+        {
+          "name": "Obtener producto por id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/productos/{{productoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["productos", "{{productoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear producto con receta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Pan especial\",\n  \"descripcion\": \"Producto terminado con receta\",\n  \"unidad_medida\": \"unidad\",\n  \"costo_estimado\": 2500,\n  \"usuario_id\": 1,\n  \"observaciones\": \"Consumo inicial de materias primas\",\n  \"receta\": [\n    { \"ingrediente_id\": 1, \"cantidad_necesaria\": 2, \"unidad_medida\": \"kg\" },\n    { \"ingrediente_id\": 2, \"cantidad_necesaria\": 0.5, \"unidad_medida\": \"kg\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/productos",
+              "host": ["{{baseUrl}}"],
+              "path": ["productos"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar producto",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Producto terminado actualizado\",\n  \"costo_estimado\": 2600\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/productos/{{productoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["productos", "{{productoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Reemplazar receta del producto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receta\": [\n    { \"ingrediente_id\": 1, \"cantidad_necesaria\": 1.5, \"unidad_medida\": \"kg\" },\n    { \"ingrediente_id\": 2, \"cantidad_necesaria\": 0.25, \"unidad_medida\": \"kg\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/productos/{{productoId}}/receta",
+              "host": ["{{baseUrl}}"],
+              "path": ["productos", "{{productoId}}", "receta"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar producto",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/productos/{{productoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["productos", "{{productoId}}"]
+            }
+          }
+        }
+      ]
     }
   ],
   "variable": [
@@ -339,6 +470,10 @@
     },
     {
       "key": "movimientoId",
+      "value": "1"
+    },
+    {
+      "key": "productoId",
       "value": "1"
     }
   ]
