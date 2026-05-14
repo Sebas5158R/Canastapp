@@ -8,7 +8,6 @@ import { catchError } from 'rxjs/operators';
 })
 export class ApiService {
 
-  // ── Cambia esta URL cuando tengas el endpoint real ──
   readonly BASE_URL = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}

@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import {
   MateriaPrima,
-  MateriaPrimaConEstado,
   MovimientoInventario,
   CreateMateriaPrimaRequest,
   UpdateMateriaPrimaRequest,
@@ -15,42 +14,33 @@ import {
 })
 export class MateriaPrimaService {
 
+  private readonly path = 'inventario/materia-prima';
+
   constructor(private api: ApiService) {}
 
-  // ── Materia Prima ──
-
   getMateriaPrimas(): Observable<MateriaPrima[]> {
-    return this.api.get<MateriaPrima[]>('materia-prima');
-  }
-
-  getInventarioActual(): Observable<MateriaPrimaConEstado[]> {
-    return this.api.get<MateriaPrimaConEstado[]>('materia-prima/inventario');
+    return this.api.get<MateriaPrima[]>(this.path);
   }
 
   getMateriaPrimaPorId(id: number): Observable<MateriaPrima> {
-    return this.api.get<MateriaPrima>(`materia-prima/${id}`);
+    return this.api.get<MateriaPrima>(`${this.path}/${id}`);
   }
 
   crearMateriaPrima(data: CreateMateriaPrimaRequest): Observable<MateriaPrima> {
-    return this.api.post<MateriaPrima>('materia-prima', data);
+    return this.api.post<MateriaPrima>(this.path, data);
   }
 
   actualizarMateriaPrima(id: number, data: UpdateMateriaPrimaRequest): Observable<MateriaPrima> {
-    return this.api.put<MateriaPrima>(`materia-prima/${id}`, data);
+    return this.api.put<MateriaPrima>(`${this.path}/${id}`, data);
   }
 
-  eliminarMateriaPrima(id: number): Observable<void> {
-    return this.api.delete<void>(`materia-prima/${id}`);
+  eliminarMateriaPrima(id: number): Observable<{ message: string }> {
+    return this.api.delete<{ message: string }>(`${this.path}/${id}`);
   }
 
-  // ── Movimientos de Inventario ──
-
-  getMovimientos(): Observable<MovimientoInventario[]> {
-    return this.api.get<MovimientoInventario[]>('movimientos-inventario');
-  }
-
+  // ── Movimientos — pendiente de confirmar endpoint con el equipo ──
   getMovimientosPorMateria(materiaPrimaId: number): Observable<MovimientoInventario[]> {
-    return this.api.get<MovimientoInventario[]>(`materia-prima/${materiaPrimaId}/movimientos`);
+    return this.api.get<MovimientoInventario[]>(`${this.path}/${materiaPrimaId}/movimientos`);
   }
 
   registrarMovimiento(data: CreateMovimientoRequest): Observable<MovimientoInventario> {
