@@ -4,13 +4,8 @@ import {
   inject,
 } from '@angular/core';
 
-import {
-  CommonModule,
-} from '@angular/common';
-
-import {
-  FormsModule,
-} from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import {
   IonicModule,
@@ -18,205 +13,136 @@ import {
   ToastController,
   ModalController,
 } from '@ionic/angular';
-import {
-  MovimientosComponent,
-} from './modals/movimientos/movimientos.component';
 
-import {
-  MateriaPrimaService,
-} from 'src/app/data/services/materia-prima.service';
-import {
-  MateriaFormComponent,
-} from './modals/materia-form/materia-form.component';
-
-import {
-  MateriaPrima,
-} from 'src/app/data/interfaces/materia-prima.interface';
-import {
-  InventarioState,
-} from 'src/app/data/state/inventario.state';
+import { MateriaPrimaService } from 'src/app/data/services/materia-prima.service';
+import { MateriaFormComponent } from './modals/materia-form/materia-form.component';
+import { MovimientosComponent } from './modals/movimientos/movimientos.component';
+import { MateriaPrima } from 'src/app/data/interfaces/materia-prima.interface';
+import { InventarioState } from 'src/app/data/state/inventario.state';
 
 @Component({
   selector: 'app-inventario',
-
-  templateUrl:
-    './inventario.page.html',
-
-  styleUrls: [
-    './inventario.page.scss',
-  ],
-
+  templateUrl: './inventario.page.html',
+  styleUrls: ['./inventario.page.scss'],
   standalone: true,
-
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-  ],
+  imports: [CommonModule, FormsModule, IonicModule],
 })
-export class InventarioPage
-implements OnInit {
+export class InventarioPage implements OnInit {
 
-  private materiaPrimaService =
-    inject(MateriaPrimaService);
+  private materiaPrimaService = inject(MateriaPrimaService);
+  private inventarioState     = inject(InventarioState);
+  private toastController     = inject(ToastController);
+  private modalController     = inject(ModalController);
+  private alertController     = inject(AlertController);
 
-  private inventarioState =
-    inject(InventarioState);
+  inventario$ = this.inventarioState.inventario$;
 
-  private toastController =
-    inject(ToastController);
-
-  private modalController =
-    inject(ModalController);
-
-  private alertController =
-    inject(AlertController);
-
-  inventario$ =
-    this.inventarioState
-      .inventario$;
-
-  busqueda = '';
+  busqueda   = '';
+  cargando   = true;
+  errorCarga = false;
 
   ngOnInit(): void {
-
     this.cargarInventario();
   }
 
   cargarInventario(): void {
+    this.cargando   = true;
+    this.errorCarga = false;
 
-    this.materiaPrimaService
-      .obtenerInventario()
-      .subscribe();
-  }
-  async abrirMovimientos(
-  materia: MateriaPrima
-): Promise<void> {
-
-  const modal =
-    await this.modalController
-      .create({
-
-        component:
-          MovimientosComponent,
-
-        componentProps: {
-          materia,
-        },
-      });
-
-  await modal.present();
-}
-  async crearMateria():
-Promise<void> {
-
-  const modal =
-    await this.modalController
-      .create({
-
-        component:
-          MateriaFormComponent,
-      });
-
-  await modal.present();
-
-  await modal.onDidDismiss();
-}
-async editarMateria(
-  materia: MateriaPrima
-): Promise<void> {
-
-  const modal =
-    await this.modalController
-      .create({
-
-        component:
-          MateriaFormComponent,
-
-        componentProps: {
-          materia,
-        },
-      });
-
-  await modal.present();
-
-  await modal.onDidDismiss();
-}
-async eliminarMateria(
-  materia: MateriaPrima
-): Promise<void> {
-
-  const alert =
-    await this.alertController
-      .create({
-
-        header: 'Eliminar',
-
-        message:
-          `¿Eliminar ${materia.nombre}?`,
-
-        buttons: [
-
-          {
-            text: 'Cancelar',
-            role: 'cancel',
-          },
-
-          {
-            text: 'Eliminar',
-
-            role: 'destructive',
-
-            handler: () => {
-
-              this.materiaPrimaService
-                .eliminarMateriaPrima(
-                  materia.id
-                )
-                .subscribe();
-            },
-          },
-        ],
-      });
-
-  await alert.present();
-}
-  async refrescar(
-    event: any
-  ): Promise<void> {
-
-    this.materiaPrimaService
-      .obtenerInventario()
-      .subscribe({
-
-        next: () => {
-
-          event.target.complete();
-        },
-
-        error: () => {
-
-          event.target.complete();
-        },
-      });
+    this.materiaPrimaService.obtenerInventario().subscribe({
+      next:  () => { this.cargando = false; },
+      error: () => { this.cargando = false; this.errorCarga = true; },
+    });
   }
 
-  async mostrarToast(
-    mensaje: string,
-    color = 'success'
-  ): Promise<void> {
+  filtrarInventario(lista: MateriaPrima[]): MateriaPrima[] {
+    const q = this.busqueda.trim().toLowerCase();
+    return q ? lista.filter(m => m.nombre.toLowerCase().includes(q)) : lista;
+  }
 
-    const toast =
-      await this.toastController
-        .create({
+  estadoStock(m: MateriaPrima): 'critico' | 'exceso' | 'normal' {
+    if (+m.cantidad_disponible <= +m.stock_minimo) return 'critico';
+    if (+m.cantidad_disponible >= +m.stock_maximo) return 'exceso';
+    return 'normal';
+  }
 
-          message: mensaje,
+  labelEstado(m: MateriaPrima): string {
+    const e = this.estadoStock(m);
+    return e === 'critico' ? 'CRÍTICO' : e === 'exceso' ? 'EXCESO' : 'NORMAL';
+  }
 
-          duration: 2000,
+  async crearMateria(): Promise<void> {
+    const modal = await this.modalController.create({
+      component: MateriaFormComponent,
+      cssClass: 'materia-modal',
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss<boolean>();
+    if (data) await this.mostrarToast('Materia prima creada correctamente');
+  }
 
-          color,
-        });
+  async editarMateria(materia: MateriaPrima): Promise<void> {
+    const modal = await this.modalController.create({
+      component: MateriaFormComponent,
+      cssClass: 'materia-modal',
+      componentProps: { materia },
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss<boolean>();
+    if (data) await this.mostrarToast('Materia prima actualizada');
+  }
 
+  async abrirMovimientos(materia: MateriaPrima): Promise<void> {
+    const modal = await this.modalController.create({
+      component: MovimientosComponent,
+      cssClass: 'materia-modal',
+      componentProps: { materia },
+    });
+    await modal.present();
+    await modal.onDidDismiss();
+    this.cargarInventario();
+  }
+
+  async eliminarMateria(materia: MateriaPrima): Promise<void> {
+    const alert = await this.alertController.create({
+      header:  'Eliminar materia prima',
+      message: `¿Estás seguro de eliminar <strong>${materia.nombre}</strong>? Esta acción no se puede deshacer.`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            this.materiaPrimaService.eliminarMateriaPrima(materia.id).subscribe({
+              next: async () => {
+                await this.mostrarToast('Materia prima eliminada');
+              },
+              error: async (err: { error?: { message?: string } }) => {
+                const msg = err?.error?.message || 'No se pudo eliminar';
+                await this.mostrarToast(msg, 'danger');
+              },
+            });
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  async refrescar(event: { target: { complete: () => void } }): Promise<void> {
+    this.materiaPrimaService.obtenerInventario().subscribe({
+      next:  () => event.target.complete(),
+      error: () => event.target.complete(),
+    });
+  }
+
+  async mostrarToast(mensaje: string, color = 'success'): Promise<void> {
+    const toast = await this.toastController.create({
+      message:  mensaje,
+      duration: 2500,
+      color,
+      position: 'bottom',
+    });
     await toast.present();
   }
 }

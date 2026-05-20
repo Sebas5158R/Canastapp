@@ -1,42 +1,334 @@
-<ion-header>
-
+<!-- ═══════════════════════════════════════════ HEADER -->
+<ion-header class="page-header">
   <ion-toolbar>
-
-    <ion-title>
-      Productos
-    </ion-title>
-
+    <ion-buttons slot="start">
+      <ion-menu-button>
+        <ion-icon name="menu-outline"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title class="page-title">Productos</ion-title>
   </ion-toolbar>
-
 </ion-header>
 
-<ion-content class="ion-padding">
+<!-- ═══════════════════════════════════════════ CONTENT -->
+<ion-content class="page-content">
+  <div class="content-wrapper">
 
-  <ion-list>
+    <!-- Loading -->
+    <div class="loading-state" *ngIf="cargando()">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p class="empty-text">Cargando productos…</p>
+    </div>
 
-    <ion-item
-      *ngFor="
-        let producto of productos$ | async
-      ">
+    <!-- Lista de productos -->
+    <ng-container *ngIf="!cargando()">
 
-      <ion-label>
+      <!-- Empty -->
+      <div class="empty-state" *ngIf="(productos$ | async)?.length === 0">
+        <ion-icon name="cube-outline" class="empty-icon"></ion-icon>
+        <p class="empty-text">No hay productos registrados.</p>
+        <p class="empty-sub">Usa el botón <strong>+</strong> para agregar el primero.</p>
+      </div>
 
-        <h2>
-          {{ producto.nombre }}
-        </h2>
+      <!-- Grid -->
+      <div class="products-grid" *ngIf="(productos$ | async)?.length! > 0">
 
-        <p>
-          {{ producto.descripcion }}
-        </p>
+        <div
+          class="product-card"
+          *ngFor="let producto of productos$ | async; trackBy: trackById"
+        >
 
-        <p>
-          ${{ producto.precio }}
-        </p>
+          <!-- Cabecera de tarjeta -->
+          <div class="card-header" (click)="toggleExpansion(producto.id)">
+            <div class="card-icon-wrap">
+              <ion-icon name="cube-outline" class="card-icon"></ion-icon>
+            </div>
 
-      </ion-label>
+            <div class="card-main">
+              <h2 class="product-name">{{ producto.nombre }}</h2>
+              <p class="product-desc" *ngIf="producto.descripcion">{{ producto.descripcion }}</p>
 
-    </ion-item>
+              <div class="product-meta">
+                <span class="meta-chip" *ngIf="producto.unidad_medida">
+                  <ion-icon name="list-outline"></ion-icon>
+                  {{ producto.unidad_medida }}
+                </span>
+                <span class="meta-chip cost" *ngIf="producto.costo_estimado">
+                  <ion-icon name="cash-outline"></ion-icon>
+                  ${{ producto.costo_estimado | number:'1.2-2' }}
+                </span>
+                <span class="meta-chip recipe" *ngIf="producto.recetas?.length">
+                  <ion-icon name="restaurant-outline"></ion-icon>
+                  {{ producto.recetas!.length }} ingrediente{{ producto.recetas!.length !== 1 ? 's' : '' }}
+                </span>
+              </div>
+            </div>
 
-  </ion-list>
+            <div class="card-actions">
+              <!-- Botón Receta -->
+              <button
+                class="btn-receta"
+                (click)="abrirReceta(producto, $event)"
+                title="Ver receta"
+              >
+                <ion-icon name="restaurant-outline"></ion-icon>
+                Receta
+              </button>
 
+              <!-- Flecha expansión -->
+              <ion-icon
+                name="chevron-down-outline"
+                class="arrow-icon"
+                [class.rotated]="estaExpandido(producto.id)"
+              ></ion-icon>
+            </div>
+          </div>
+
+          <!-- Detalle expandible: ingredientes -->
+          <div class="ingredients-panel" [class.visible]="estaExpandido(producto.id)">
+            <div class="ingredients-inner">
+              <p class="ingredients-title">Ingredientes de la receta</p>
+
+              <div class="no-receta" *ngIf="!producto.recetas || producto.recetas.length === 0">
+                Sin ingredientes registrados.
+              </div>
+
+              <div
+                class="ingredient-row"
+                *ngFor="let item of producto.recetas"
+              >
+                <span class="ing-name">{{ item.materia_prima?.nombre ?? 'Ingrediente #' + item.ingrediente_id }}</span>
+                <span class="ing-qty">{{ item.cantidad_necesaria }} {{ item.unidad_medida }}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
 </ion-content>
+
+<!-- ═══════════════════════════════════════ FAB: nuevo producto -->
+<ion-fab slot="fixed" vertical="bottom" horizontal="end">
+  <ion-fab-button (click)="abrirModalCrear()" color="primary">
+    <ion-icon name="add-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+
+<!-- ═══════════════════════════════════ MODAL: ver receta -->
+<ion-modal
+  [isOpen]="modalRecetaAbierto()"
+  (didDismiss)="cerrarModalReceta()"
+  [breakpoints]="[0, 0.6, 0.9]"
+  [initialBreakpoint]="0.6"
+>
+  <ng-template>
+    <div class="modal-container">
+
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Receta</h2>
+          <p class="modal-subtitle">{{ productoRecetaActual()?.nombre }}</p>
+        </div>
+        <button class="modal-close-btn" (click)="cerrarModalReceta()">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="receta-meta" *ngIf="productoRecetaActual() as prod">
+          <span class="meta-chip" *ngIf="prod.unidad_medida">
+            <ion-icon name="list-outline"></ion-icon>{{ prod.unidad_medida }}
+          </span>
+          <span class="meta-chip cost" *ngIf="prod.costo_estimado">
+            <ion-icon name="cash-outline"></ion-icon>
+            Costo estimado: ${{ prod.costo_estimado | number:'1.2-2' }}
+          </span>
+        </div>
+
+        <p class="section-label">Ingredientes</p>
+
+        <div
+          *ngIf="!productoRecetaActual()?.recetas?.length"
+          class="no-receta"
+        >
+          Este producto no tiene ingredientes en su receta.
+        </div>
+
+        <div
+          class="receta-row"
+          *ngFor="let item of productoRecetaActual()?.recetas"
+        >
+          <div class="receta-ing-info">
+            <span class="receta-ing-name">
+              {{ item.materia_prima?.nombre ?? 'Ingrediente #' + item.ingrediente_id }}
+            </span>
+            <span class="receta-ing-um">{{ item.materia_prima?.unidad_medida ?? item.unidad_medida }}</span>
+          </div>
+          <span class="receta-ing-qty">{{ item.cantidad_necesaria }} {{ item.unidad_medida }}</span>
+        </div>
+
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+
+<!-- ═══════════════════════════════════ MODAL: crear producto -->
+<ion-modal
+  [isOpen]="modalAbierto()"
+  (didDismiss)="cerrarModal()"
+  [breakpoints]="[0, 1]"
+  [initialBreakpoint]="1"
+>
+  <ng-template>
+    <div class="modal-container">
+
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Nuevo Producto</h2>
+          <p class="modal-subtitle">Completa los datos y la receta</p>
+        </div>
+        <button class="modal-close-btn" (click)="cerrarModal()">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- Error global -->
+        <div class="error-banner" *ngIf="errorMsg()">
+          <ion-icon name="close-outline"></ion-icon>
+          {{ errorMsg() }}
+        </div>
+
+        <!-- Datos del producto -->
+        <p class="section-label">Datos del producto</p>
+
+        <div class="form-group">
+          <label class="form-label">Nombre <span class="required">*</span></label>
+          <input
+            class="form-input"
+            [(ngModel)]="form.nombre"
+            placeholder="Ej: Pan artesanal"
+            type="text"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea
+            class="form-input form-textarea"
+            [(ngModel)]="form.descripcion"
+            placeholder="Descripción opcional…"
+            rows="2"
+          ></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">Unidad de medida</label>
+            <input
+              class="form-input"
+              [(ngModel)]="form.unidad_medida"
+              placeholder="unidad"
+              type="text"
+            />
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label">Costo estimado ($)</label>
+            <input
+              class="form-input"
+              [(ngModel)]="form.costo_estimado"
+              placeholder="0.00"
+              type="number"
+              min="0"
+              step="0.01"
+            />
+          </div>
+        </div>
+
+        <!-- Receta / ingredientes -->
+        <div class="section-header-row">
+          <p class="section-label">Ingredientes de la receta</p>
+          <button class="btn-add-line" (click)="agregarLinea()">
+            <ion-icon name="add-outline"></ion-icon>
+            Agregar
+          </button>
+        </div>
+
+        <div class="receta-header-row">
+          <span class="col-ing">Materia prima</span>
+          <span class="col-qty">Cantidad</span>
+          <span class="col-um">Unidad</span>
+          <span class="col-del"></span>
+        </div>
+
+        <div
+          class="receta-form-row"
+          *ngFor="let linea of lineasReceta; let i = index"
+        >
+
+          <!-- Selector de materia prima -->
+          <select
+            class="form-select col-ing"
+            [(ngModel)]="linea.ingrediente_id"
+            (ngModelChange)="onIngredienteChange(i)"
+          >
+            <option [ngValue]="null">— Seleccionar —</option>
+            <option
+              *ngFor="let mp of materiaPrimas()"
+              [ngValue]="mp.id"
+            >
+              {{ mp.nombre }} ({{ mp.unidad_medida }})
+            </option>
+          </select>
+
+          <!-- Cantidad -->
+          <input
+            class="form-input col-qty"
+            type="number"
+            min="0.001"
+            step="0.001"
+            placeholder="0"
+            [(ngModel)]="linea.cantidad_necesaria"
+          />
+
+          <!-- Unidad -->
+          <input
+            class="form-input col-um"
+            type="text"
+            placeholder="kg"
+            [(ngModel)]="linea.unidad_medida"
+          />
+
+          <!-- Eliminar -->
+          <button class="btn-del-line" (click)="eliminarLinea(i)" title="Quitar fila">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+
+        </div>
+
+        <p class="hint-text" *ngIf="lineasReceta.length === 0">
+          Agrega al menos un ingrediente usando el botón de arriba.
+        </p>
+
+      </div>
+
+      <!-- Footer con acciones -->
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-save" (click)="guardar()" [disabled]="guardando()">
+          <ion-spinner *ngIf="guardando()" name="crescent" class="btn-spinner"></ion-spinner>
+          <ion-icon *ngIf="!guardando()" name="checkmark-outline"></ion-icon>
+          {{ guardando() ? 'Guardando…' : 'Guardar producto' }}
+        </button>
+      </div>
+
+    </div>
+  </ng-template>
+</ion-modal>

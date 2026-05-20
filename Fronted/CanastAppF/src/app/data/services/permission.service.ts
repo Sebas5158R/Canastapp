@@ -33,7 +33,7 @@ export class PermissionService {
     }
 
     const rol =
-      usuario?.rol?.nombre;
+      usuario?.rol?.nombre ?? '';
 
     return rolesPermitidos
       .includes(rol);

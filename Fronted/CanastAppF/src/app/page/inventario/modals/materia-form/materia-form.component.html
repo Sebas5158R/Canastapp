@@ -1,191 +1,145 @@
-<ion-header>
-
+<ion-header class="modal-header">
   <ion-toolbar>
 
-    <ion-title>
-
-      {{
-        materia
-          ? 'Editar'
-          : 'Nueva'
-      }}
-
-      Materia Prima
-
+    <ion-title class="modal-title">
+      {{ esEdicion ? 'Editar' : 'Nueva' }} Materia Prima
     </ion-title>
 
     <ion-buttons slot="end">
-
-      <ion-button
-        (click)="cerrar()">
-
-        Cerrar
-
-      </ion-button>
-
+      <button class="modal-close-btn" (click)="cerrar()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
     </ion-buttons>
 
   </ion-toolbar>
-
 </ion-header>
 
-<ion-content>
-
-  <ion-list>
-
-    <!-- NOMBRE -->
-
-    <ion-item>
-
-      <ion-input
-
-        label="Nombre"
-
-        labelPlacement="stacked"
-
-        [(ngModel)]="form.nombre">
-
-      </ion-input>
-
-    </ion-item>
-
-    <!-- DESCRIPCION -->
-
-    <ion-item>
-
-      <ion-textarea
-
-        label="Descripción"
-
-        labelPlacement="stacked"
-
-        [(ngModel)]="form.descripcion">
-
-      </ion-textarea>
-
-    </ion-item>
-
-    <!-- STOCK -->
-
-    <ion-item>
-
-      <ion-input
-
-        type="number"
-
-        label="Cantidad"
-
-        labelPlacement="stacked"
-
-        [(ngModel)]="
-          form.cantidad_disponible">
-
-      </ion-input>
-
-    </ion-item>
-
-    <!-- UNIDAD -->
-
-    <ion-item>
-
-      <ion-select
-
-        label="Unidad"
-
-        labelPlacement="stacked"
-
-        [(ngModel)]="
-          form.unidad_medida">
-
-        <ion-select-option value="kg">
-          KG
-        </ion-select-option>
-
-        <ion-select-option value="unidad">
-          Unidad
-        </ion-select-option>
-
-        <ion-select-option value="litro">
-          Litro
-        </ion-select-option>
-
-      </ion-select>
-
-    </ion-item>
-
-    <!-- STOCK MIN -->
-
-    <ion-item>
-
-      <ion-input
-
-        type="number"
-
-        label="Stock mínimo"
-
-        labelPlacement="stacked"
-
-        [(ngModel)]="
-          form.stock_minimo">
-
-      </ion-input>
-
-    </ion-item>
-
-    <!-- STOCK MAX -->
-
-    <ion-item>
-
-      <ion-input
-
-        type="number"
-
-        label="Stock máximo"
-
-        labelPlacement="stacked"
-
-        [(ngModel)]="
-          form.stock_maximo">
-
-      </ion-input>
-
-    </ion-item>
-
-    <!-- FECHA -->
-
-    <ion-item>
-
-      <ion-input
-
-        type="date"
-
-        label="Vencimiento"
-
-        labelPlacement="stacked"
-
-        [(ngModel)]="
-          form.fecha_vencimiento">
-
-      </ion-input>
-
-    </ion-item>
-
-  </ion-list>
-
-  <!-- BOTON -->
-
-  <div class="ion-padding">
-
-    <ion-button
-
-      expand="block"
-
-      (click)="guardar()">
-
-      Guardar
-
-    </ion-button>
+<ion-content class="modal-content">
+  <div class="form-inner">
+
+    <!-- Sección: Información básica -->
+    <p class="form-section-title">Información básica</p>
+
+    <div class="form-grid">
+
+      <!-- Nombre -->
+      <div class="field full">
+        <label class="field-label">Nombre <span class="required">*</span></label>
+        <input
+          class="field-input"
+          type="text"
+          placeholder="Ej. Harina de trigo"
+          [(ngModel)]="form.nombre"
+          maxlength="100"
+        />
+      </div>
+
+      <!-- Descripción -->
+      <div class="field full">
+        <label class="field-label">Descripción</label>
+        <textarea
+          class="field-textarea"
+          placeholder="Descripción opcional..."
+          [(ngModel)]="form.descripcion"
+          rows="2"
+        ></textarea>
+      </div>
+
+    </div>
+
+    <!-- Sección: Stock -->
+    <p class="form-section-title">Stock e inventario</p>
+
+    <div class="form-grid">
+
+      <!-- Cantidad disponible -->
+      <div class="field">
+        <label class="field-label">
+          {{ esEdicion ? 'Cantidad actual' : 'Cantidad inicial' }}
+          <span class="required">*</span>
+        </label>
+        <input
+          class="field-input"
+          type="number"
+          min="0"
+          placeholder="0"
+          [(ngModel)]="form.cantidad_disponible"
+        />
+      </div>
+
+      <!-- Unidad de medida -->
+      <div class="field">
+        <label class="field-label">Unidad de medida</label>
+        <select class="field-select" [(ngModel)]="form.unidad_medida">
+          <option *ngFor="let u of unidades" [value]="u">{{ u }}</option>
+        </select>
+      </div>
+
+      <!-- Stock mínimo -->
+      <div class="field">
+        <label class="field-label">Stock mínimo</label>
+        <input
+          class="field-input"
+          type="number"
+          min="0"
+          placeholder="0"
+          [(ngModel)]="form.stock_minimo"
+        />
+      </div>
+
+      <!-- Stock máximo -->
+      <div class="field">
+        <label class="field-label">Stock máximo</label>
+        <input
+          class="field-input"
+          type="number"
+          min="0"
+          placeholder="999999"
+          [(ngModel)]="form.stock_maximo"
+        />
+      </div>
+
+    </div>
+
+    <!-- Sección: Adicional -->
+    <p class="form-section-title">Adicional</p>
+
+    <div class="form-grid">
+
+      <!-- Fecha de vencimiento -->
+      <div class="field">
+        <label class="field-label">Fecha vencimiento</label>
+        <input
+          class="field-input"
+          type="date"
+          [(ngModel)]="form.fecha_vencimiento"
+        />
+      </div>
+
+      <!-- Estado -->
+      <div class="field">
+        <label class="field-label">Estado</label>
+        <select class="field-select" [(ngModel)]="form.estado_inventario">
+          <option value="activo">Activo</option>
+          <option value="inactivo">Inactivo</option>
+          <option value="agotado">Agotado</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- Acciones -->
+    <div class="form-actions">
+      <button class="btn-cancel" (click)="cerrar()" [disabled]="guardando">
+        Cancelar
+      </button>
+      <button class="btn-save" (click)="guardar()" [disabled]="guardando">
+        <ion-spinner *ngIf="guardando" name="crescent" class="btn-spinner"></ion-spinner>
+        <span *ngIf="!guardando">
+          {{ esEdicion ? 'Guardar cambios' : 'Crear materia prima' }}
+        </span>
+      </button>
+    </div>
 
   </div>
-
 </ion-content>
