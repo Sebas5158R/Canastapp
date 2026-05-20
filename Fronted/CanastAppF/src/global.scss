@@ -24,7 +24,17 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+@font-face {
+  font-family: 'Oh Chewy';
+  src: url('/assets/fonts/Oh Chewy.ttf') format('truetype');
+}
 
+h1 {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Oh Chewy', sans-serif;
+}
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
