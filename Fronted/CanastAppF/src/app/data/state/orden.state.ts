@@ -1,26 +1,27 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
-import { ProduccionService } from '../services/produccion.service';
-import { EntregaProducto, RegistroProduccion, OrdenProduccion } from '../interfaces/orden-produccion.interface';
+import { Orden, RegistroProduccion, EntregaProducto } from '../interfaces/orden.interface';
+import { OrdenesService } from '../services/ordenes.service';
 
 @Injectable({ providedIn: 'root' })
-export class ProduccionState {
-  private produccionService = inject(ProduccionService);
+export class OrdenState {
+  private ordenesService = inject(OrdenesService);
 
   // Signals
-  ordenes = signal<OrdenProduccion[]>([]);
-  ordenSeleccionada = signal<OrdenProduccion | null>(null);
+  ordenes = signal<Orden[]>([]);
+  ordenSeleccionada = signal<Orden | null>(null);
   registrosProduccion = signal<RegistroProduccion[]>([]);
   entregas = signal<EntregaProducto[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   filtroEstado = signal<string>('');
 
+  // Cargar órdenes
   loadOrdenes(params?: { estado?: string }): void {
     this.loading.set(true);
     this.error.set(null);
     
-    this.produccionService.getOrdenes(params)
+    this.ordenesService.getOrdenes(params)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (ordenes) => this.ordenes.set(ordenes),
@@ -32,7 +33,7 @@ export class ProduccionState {
     this.loading.set(true);
     this.error.set(null);
     
-    this.produccionService.getHistorial()
+    this.ordenesService.getHistorial()
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (ordenes) => this.ordenes.set(ordenes),
@@ -44,7 +45,7 @@ export class ProduccionState {
     this.loading.set(true);
     this.error.set(null);
     
-    this.produccionService.getOrdenById(id)
+    this.ordenesService.getOrdenById(id)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (orden) => this.ordenSeleccionada.set(orden),
@@ -53,7 +54,7 @@ export class ProduccionState {
   }
 
   loadRegistrosProduccion(ordenId: string): void {
-    this.produccionService.getRegistrosPorOrden(ordenId)
+    this.ordenesService.getRegistrosPorOrden(ordenId)
       .subscribe({
         next: (registros) => this.registrosProduccion.set(registros),
         error: (err) => console.error('Error cargando registros:', err)
@@ -61,7 +62,7 @@ export class ProduccionState {
   }
 
   loadEntregas(ordenId: string): void {
-    this.produccionService.getEntregasPorOrden(ordenId)
+    this.ordenesService.getEntregasPorOrden(ordenId)
       .subscribe({
         next: (entregas) => this.entregas.set(entregas),
         error: (err) => console.error('Error cargando entregas:', err)
@@ -71,7 +72,7 @@ export class ProduccionState {
   updateEstado(id: string, estado: string, observaciones?: string): void {
     this.loading.set(true);
     
-    this.produccionService.actualizarEstado(id, { estado: estado as any, observaciones })
+    this.ordenesService.actualizarEstado(id, { estado: estado as any, observaciones })
       .subscribe({
         next: (ordenActualizada) => {
           this.ordenes.update(ordenes => 
@@ -95,6 +96,7 @@ export class ProduccionState {
     this.loadOrdenes(params);
   }
 
+  // Limpiar estado
   clearState(): void {
     this.ordenes.set([]);
     this.ordenSeleccionada.set(null);

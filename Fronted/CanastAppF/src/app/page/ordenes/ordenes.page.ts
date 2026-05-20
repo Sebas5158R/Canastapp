@@ -1,112 +1,129 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  IonContent, IonHeader, IonTitle, IonToolbar,
-  IonButtons, IonMenuButton, IonIcon, IonSpinner,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  chevronDownOutline, chevronUpOutline, timeOutline,
-  cubeOutline, calendarOutline, personOutline,
-  documentTextOutline, menuOutline, filterOutline,
-} from 'ionicons/icons';
-import { OrdenProduccion, EstadoOrden } from '../../data/interfaces/orden-produccion.interface';
-
-interface OrdenVM extends OrdenProduccion {
-  expandida: boolean;
-  nombre_producto: string;
-}
+import { IonicModule, ModalController, AlertController } from '@ionic/angular';
+import { OrdenState } from 'src/app/data/state/orden.state';
+import { Orden } from 'src/app/data/interfaces/orden.interface';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-ordenes',
   templateUrl: './ordenes.page.html',
   styleUrls: ['./ordenes.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    IonContent, IonHeader, IonTitle, IonToolbar,
-    IonButtons, IonMenuButton, IonIcon, IonSpinner,
-  ],
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class OrdenesPage implements OnInit {
+  private ordenState = inject(OrdenState);
+  private destroyRef = inject(DestroyRef);
+  private alertController = inject(AlertController);
 
-  cargando = false;
-  filtroActivo: EstadoOrden | 'todas' = 'todas';
+  // Signals del state
+  ordenes = this.ordenState.ordenes;
+  loading = this.ordenState.loading;
+  error = this.ordenState.error;
+  filtroEstado = this.ordenState.filtroEstado;
+  registrosProduccion = this.ordenState.registrosProduccion;
+  entregas = this.ordenState.entregas;
 
-  filtros: { label: string; value: EstadoOrden | 'todas' }[] = [
-    { label: 'Todas',        value: 'todas' },
-    { label: 'Pendiente',    value: 'pendiente' },
-    { label: 'En producción',value: 'en_produccion' },
-    { label: 'Completada',   value: 'completada' },
-    { label: 'Cancelada',    value: 'cancelada' },
-  ];
+  // Estado local
+  estadosDisponibles = ['pendiente', 'en_produccion', 'completada', 'cancelada'];
+  selectedOrden: Orden | null = null;
+  showModal = false;
 
-  ordenes: OrdenVM[] = [
-    {
-      id: 1, producto_id: 1, nombre_producto: 'Pan artesanal',
-      cantidad_solicitada: 100, fecha_requerida: '2025-05-20',
-      fecha_creacion: '2025-05-10T08:00:00Z', estado: 'en_produccion',
-      usuario_creador_id: 2, observaciones: 'Pedido especial para evento',
-      notificado_bodega: true, expandida: false,
-    },
-    {
-      id: 2, producto_id: 2, nombre_producto: 'Pan integral',
-      cantidad_solicitada: 60, fecha_requerida: '2025-05-22',
-      fecha_creacion: '2025-05-11T09:00:00Z', estado: 'pendiente',
-      usuario_creador_id: 2, observaciones: '',
-      notificado_bodega: false, expandida: false,
-    },
-    {
-      id: 3, producto_id: 3, nombre_producto: 'Facturas',
-      cantidad_solicitada: 24, fecha_requerida: '2025-05-15',
-      fecha_creacion: '2025-05-08T10:00:00Z', estado: 'completada',
-      usuario_creador_id: 2, observaciones: 'Entregado sin incidencias',
-      notificado_bodega: true, expandida: false,
-    },
-    {
-      id: 4, producto_id: 1, nombre_producto: 'Pan artesanal',
-      cantidad_solicitada: 50, fecha_requerida: '2025-05-12',
-      fecha_creacion: '2025-05-05T07:00:00Z', estado: 'cancelada',
-      usuario_creador_id: 2, observaciones: 'Cancelada por falta de insumos',
-      notificado_bodega: false, expandida: false,
-    },
-  ];
+  constructor() {}
 
-  get ordenesFiltradas(): OrdenVM[] {
-    if (this.filtroActivo === 'todas') return this.ordenes;
-    return this.ordenes.filter(o => o.estado === this.filtroActivo);
+  ngOnInit() {
+    this.cargarOrdenes();
   }
 
-  constructor() {
-    addIcons({
-      chevronDownOutline, chevronUpOutline, timeOutline,
-      cubeOutline, calendarOutline, personOutline,
-      documentTextOutline, menuOutline, filterOutline,
-    });
+  cargarOrdenes() {
+    this.ordenState.loadOrdenes();
   }
 
-  ngOnInit(): void {}
-
-  toggleOrden(orden: OrdenVM): void {
-    orden.expandida = !orden.expandida;
+  verHistorial() {
+    this.ordenState.loadHistorial();
   }
 
-  setFiltro(valor: EstadoOrden | 'todas'): void {
-    this.filtroActivo = valor;
+  filtrarPorEstado(event: any) {
+    const estado = event.detail.value;
+    this.ordenState.setFiltroEstado(estado);
   }
 
-  etiquetaEstado(estado: EstadoOrden): string {
-    const map: Record<EstadoOrden, string> = {
-      pendiente:     'Pendiente',
-      en_produccion: 'En producción',
-      completada:    'Completada',
-      cancelada:     'Cancelada',
+  verDetalle(orden: Orden) {
+    this.selectedOrden = orden;
+    this.ordenState.loadRegistrosProduccion(orden.id);
+    this.ordenState.loadEntregas(orden.id);
+    this.showModal = true;
+  }
+
+  cerrarModal() {
+    this.showModal = false;
+    this.selectedOrden = null;
+  }
+
+  async cambiarEstado() {
+  if (!this.selectedOrden) return;
+
+  const alert = await this.alertController.create({
+    header: 'Cambiar Estado',
+    subHeader: `Orden: ${this.selectedOrden.numero_orden}`,
+    inputs: this.estadosDisponibles.map(estado => ({
+      name: 'estado',
+      type: 'radio' as const,
+      label: this.getEstadoTexto(estado),
+      value: estado,
+      checked: estado === this.selectedOrden?.estado
+    })),
+    buttons: [
+      {
+        text: 'Cancelar',
+        role: 'cancel'
+      },
+      {
+        text: 'Actualizar',
+        handler: (data) => {
+          if (data && data !== this.selectedOrden?.estado) {
+            this.ordenState.updateEstado(this.selectedOrden!.id, data);
+            this.cerrarModal();
+          }
+        }
+      }
+    ]
+  });
+
+  await alert.present();
+}
+
+  getEstadoClass(estado: string): string {
+    const clases = {
+      'pendiente': 'warning',
+      'en_produccion': 'primary',
+      'completada': 'success',
+      'cancelada': 'danger'
     };
-    return map[estado];
+    return clases[estado as keyof typeof clases] || 'secondary';
   }
 
-  trackById(_: number, item: { id: number }): number {
-    return item.id;
+  getEstadoTexto(estado: string): string {
+    const textos = {
+      'pendiente': 'Pendiente',
+      'en_produccion': 'En Producción',
+      'completada': 'Completada',
+      'cancelada': 'Cancelada'
+    };
+    return textos[estado as keyof typeof textos] || estado;
+  }
+
+  calcularProgreso(orden: Orden): number {
+    if (orden.cantidad_planeada === 0) return 0;
+    return (orden.cantidad_producida / orden.cantidad_planeada) * 100;
+  }
+
+  refresh(event: any) {
+    this.cargarOrdenes();
+    setTimeout(() => {
+      event.target.complete();
+    }, 1000);
   }
 }

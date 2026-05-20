@@ -1,58 +1,40 @@
 import { inject, Injectable } from '@angular/core';
-
-import {
-  HttpClient,
-  HttpHeaders,
-} from '@angular/common/http';
-import {
-  NetworkService,
-} from './network.service';
-
-import {
-  OfflineQueueService,
-} from './offline-queue.service';
-import {
-  Observable,
-  timeout,
-  retry,
-  catchError,
-  throwError,
-} from 'rxjs';
-
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { NetworkService } from './network.service';
+import { OfflineQueueService } from './offline-queue.service';
+import { Observable, timeout, retry, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-
   private http = inject(HttpClient);
+  private networkService = inject(NetworkService);
+  private offlineQueueService = inject(OfflineQueueService);
 
   private readonly apiUrl = environment.apiUrl;
-
   private readonly timeoutMs = 15000;
-  private networkService =
-  inject(NetworkService);
-
-private offlineQueueService =
-  inject(OfflineQueueService);
 
   private getHeaders(): HttpHeaders {
-
-    return new HttpHeaders({
+    const token = localStorage.getItem('token');
+    let headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
+
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return headers;
   }
 
-  get<T>(endpoint: string): Observable<T> {
-
+  get<T>(endpoint: string, params?: HttpParams | { [param: string]: any }): Observable<T> {
     return this.http
-      .get<T>(
-        `${this.apiUrl}/${endpoint}`,
-        {
-          headers: this.getHeaders(),
-        }
-      )
+      .get<T>(`${this.apiUrl}/${endpoint}`, {
+        headers: this.getHeaders(),
+        params: params,
+      })
       .pipe(
         timeout(this.timeoutMs),
         retry(1),
@@ -60,82 +42,38 @@ private offlineQueueService =
       );
   }
 
-  post<T>(
-  endpoint: string,
-  body: any
-): Observable<T> {
-
-  if (
-    !this.networkService.isOnline()
-  ) {
-
-    this.offlineQueueService
-      .agregarOperacion(
-        endpoint,
-        'POST',
-        body
-      );
-
-    return throwError(
-      () =>
-        new Error(
-          'SIN INTERNET'
-        )
-    );
-  }
-
-  return this.http
-    .post<T>(
-      `${this.apiUrl}/${endpoint}`,
-      body,
-      {
-        headers:
-          this.getHeaders(),
-      }
-    )
-    .pipe(
-      timeout(
-        this.timeoutMs
-      ),
-
-      catchError(
-        this.handleError
-      )
-    );
-}
-
-  patch<T>(
-    endpoint: string,
-    body: any
-  ): Observable<T> {
+  post<T>(endpoint: string, body: any, skipQueue: boolean = false): Observable<T> {
+    if (!this.networkService.isOnline() && !skipQueue) {
+      this.offlineQueueService.agregarOperacion(endpoint, 'POST', body);
+      return throwError(() => new Error('SIN INTERNET - Operación guardada para sincronizar'));
+    }
 
     return this.http
-      .patch<T>(
-        `${this.apiUrl}/${endpoint}`,
-        body,
-        {
-          headers: this.getHeaders(),
-        }
-      )
+      .post<T>(`${this.apiUrl}/${endpoint}`, body, {
+        headers: this.getHeaders(),
+      })
       .pipe(
         timeout(this.timeoutMs),
         catchError(this.handleError)
       );
   }
 
-  put<T>(
-    endpoint: string,
-    body: any
-  ): Observable<T> {
-
+  patch<T>(endpoint: string, body: any): Observable<T> {
     return this.http
-      .put<T>(
-        `${this.apiUrl}/${endpoint}`,
-        body,
-        {
-          headers: this.getHeaders(),
-        }
-      )
+      .patch<T>(`${this.apiUrl}/${endpoint}`, body, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        timeout(this.timeoutMs),
+        catchError(this.handleError)
+      );
+  }
+
+  put<T>(endpoint: string, body: any): Observable<T> {
+    return this.http
+      .put<T>(`${this.apiUrl}/${endpoint}`, body, {
+        headers: this.getHeaders(),
+      })
       .pipe(
         timeout(this.timeoutMs),
         catchError(this.handleError)
@@ -143,14 +81,10 @@ private offlineQueueService =
   }
 
   delete<T>(endpoint: string): Observable<T> {
-
     return this.http
-      .delete<T>(
-        `${this.apiUrl}/${endpoint}`,
-        {
-          headers: this.getHeaders(),
-        }
-      )
+      .delete<T>(`${this.apiUrl}/${endpoint}`, {
+        headers: this.getHeaders(),
+      })
       .pipe(
         timeout(this.timeoutMs),
         catchError(this.handleError)
@@ -158,14 +92,7 @@ private offlineQueueService =
   }
 
   private handleError(error: any) {
-
-    console.error(
-      'API ERROR:',
-      error
-    );
-
-    return throwError(
-      () => error
-    );
+    console.error('API ERROR:', error);
+    return throwError(() => error);
   }
 }

@@ -1,202 +1,61 @@
-import {
-  Injectable,
-  inject,
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { from, Observable } from 'rxjs';
+import { ApiService } from './api.service';
+import { UpdateEstadoDTO, CreateOrdenDTO, EntregaProducto, RegistroProduccion, OrdenProduccion } from '../interfaces/orden-produccion.interface';
+ 
+ 
 
-import {
-  Observable,
-  tap,
-} from 'rxjs';
 
-import {
-  ApiService,
-} from './api.service';
 
-import {
-  SocketService,
-} from './socket.service';
 
-import {
-  ProduccionState,
-} from '../state/produccion.state';
-
-import {
-  OrdenProduccion,
-} from '../interfaces/orden-produccion.interface';
-
-import {
-  RegistroProduccion,
-} from '../interfaces/registro-produccion.interface';
-
-import {
-  EntregaProducto,
-} from '../interfaces/entrega-producto.interface';
-import {
-  forkJoin,
-  switchMap,
-  map,
-  of,
-} from 'rxjs';
-
-import {
-  RecetaService,
-} from './receta.service';
-
-import {
-  MateriaPrimaService,
-} from './materia-prima.service';
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ProduccionService {
+  private api = inject(ApiService);
+  private readonly path = 'ordenes-produccion';
 
-  private api =
-    inject(ApiService);
-
-  private socketService =
-    inject(SocketService);
-
-  private produccionState =
-    inject(ProduccionState);
-    private recetaService =
-  inject(RecetaService);
-
-private materiaPrimaService =
-  inject(MateriaPrimaService);
-
-  constructor() {
-
-    this.socketService.listen(
-
-      'orden-actualizada',
-
-      (response) => {
-
-        this.produccionState
-          .actualizarOrden(
-            response
-          );
-      }
-    );
-  }
-  
-
-  obtenerOrdenes():
-    Observable<
-      OrdenProduccion[]
-    > {
-
-    return this.api
-      .get<
-        OrdenProduccion[]
-      >(
-        'ordenes-produccion'
-      )
-      .pipe(
-
-        tap((response) => {
-
-          this.produccionState
-            .setOrdenes(
-              response
-            );
-        })
-      );
+  // Órdenes
+  getOrdenes(params?: { estado?: string }): Observable<OrdenProduccion[]> {
+    return this.api.get<OrdenProduccion[]>(this.path, params);
   }
 
-  crearOrden(
-    body: Partial<
-      OrdenProduccion
-    >
-  ): Observable<
-    OrdenProduccion
-  > {
-
-    return this.api
-      .post<
-        OrdenProduccion
-      >(
-        'ordenes-produccion',
-        body
-      )
-      .pipe(
-
-        tap((response) => {
-
-          this.produccionState
-            .agregarOrden(
-              response
-            );
-        })
-      );
+  getHistorial(): Observable<OrdenProduccion[]> {
+    return this.api.get<OrdenProduccion[]>(`${this.path}/historial`);
   }
 
-  actualizarEstado(
-
-    id: number,
-
-    estado: string
-
-  ): Observable<
-    OrdenProduccion
-  > {
-
-    return this.api
-      .patch<
-        OrdenProduccion
-      >(
-
-        `ordenes-produccion/${id}/estado`,
-
-        { estado }
-      )
-      .pipe(
-
-        tap((response) => {
-
-          this.produccionState
-            .actualizarOrden(
-              response
-            );
-        })
-      );
+  getOrdenById(id: string): Observable<OrdenProduccion> {
+    return this.api.get<OrdenProduccion>(`${this.path}/${id}`);
   }
 
-  registrarProduccion(
-
-    body:
-      Partial<
-        RegistroProduccion
-      >
-
-  ): Observable<
-    RegistroProduccion
-  > {
-
-    return this.api.post<
-      RegistroProduccion
-    >(
-      'registro-produccion',
-      body
-    );
+  createOrden(orden: CreateOrdenDTO): Observable<OrdenProduccion> {
+    return this.api.post<OrdenProduccion>(this.path, orden);
   }
 
-  registrarEntrega(
+  actualizarEstado(id: string, data: UpdateEstadoDTO): Observable<OrdenProduccion> {
+    return this.api.patch<OrdenProduccion>(`${this.path}/${id}/estado`, data);
+  }
 
-    body:
-      Partial<
-        EntregaProducto
-      >
+  // Registros
+  getRegistrosPorOrden(ordenId: string): Observable<RegistroProduccion[]> {
+    return this.api.get<RegistroProduccion[]>(`${this.path}/${ordenId}/registros`);
+  }
 
-  ): Observable<
-    EntregaProducto
-  > {
+  crearRegistroProduccion(registro: Partial<RegistroProduccion>): Observable<RegistroProduccion> {
+    return this.api.post<RegistroProduccion>('registros-produccion', registro);
+  }
 
-    return this.api.post<
-      EntregaProducto
-    >(
-      'entregas-producto',
-      body
-    );
+  // Entregas
+  getEntregasPorOrden(ordenId: string): Observable<EntregaProducto[]> {
+    return this.api.get<EntregaProducto[]>(`${this.path}/${ordenId}/entregas`);
+  }
+
+  registrarEntrega(entrega: Partial<EntregaProducto>): Observable<EntregaProducto> {
+    return this.api.post<EntregaProducto>('entregas-producto', entrega);
+  }
+
+  // Trazabilidad
+  getTrazabilidadPorOrden(ordenId: string): Observable<any> {
+    return this.api.get<any>(`${this.path}/${ordenId}/trazabilidad`);
   }
 }

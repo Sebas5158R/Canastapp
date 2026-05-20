@@ -1,4 +1,4 @@
-export interface OrdenProduccion {
+export interface Orden {
   id: string;
   numero_orden: string;
   producto_id: string;
@@ -15,31 +15,24 @@ export interface OrdenProduccion {
   created_at: Date | string;
   updated_at: Date | string;
   created_by?: number;
-  created_by_nombre?: string;
 }
 
 export interface RegistroProduccion {
   id: string;
   orden_id: string;
-  orden_numero?: string;
   cantidad_producida: number;
   fecha_registro: Date | string;
   observaciones?: string;
-  usuario_id?: number;
   usuario_nombre?: string;
-  created_at: Date | string;
 }
 
 export interface EntregaProducto {
   id: string;
   orden_id: string;
-  orden_numero?: string;
   cantidad_entregada: number;
   fecha_entrega: Date | string;
   observaciones?: string;
-  usuario_id?: number;
   usuario_nombre?: string;
-  created_at: Date | string;
 }
 
 export interface CreateOrdenDTO {
@@ -51,15 +44,6 @@ export interface CreateOrdenDTO {
 }
 
 export interface UpdateEstadoDTO {
-  estado: OrdenProduccion['estado'];
+  estado: Orden['estado'];
   observaciones?: string;
-}
-
-export interface TrazabilidadItem {
-  id: string;
-  tipo: 'creacion' | 'cambio_estado' | 'registro_produccion' | 'entrega';
-  descripcion: string;
-  usuario_nombre: string;
-  fecha: Date | string;
-  datos_adicionales?: any;
 }

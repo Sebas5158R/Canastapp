@@ -21,8 +21,8 @@ export const routes: Routes = [
     path: 'dashboard',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./page/dashboard/dashboard.page')
-        .then(m => m.DashboardPage),
+      import('./page/home/home.page')
+        .then(m => m.HomePage),
   },
 
   {
@@ -49,11 +49,5 @@ export const routes: Routes = [
         .then(m => m.OrdenesPage),
   },
 
-  {
-    path: 'produccion',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./page/produccion/produccion.page')
-        .then(m => m.ProduccionPage),
-  },
+
 ];
