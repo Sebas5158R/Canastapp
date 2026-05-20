@@ -1,0 +1,134 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-title>
+      Producción
+    </ion-title>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+
+    <ion-item
+      *ngFor="
+        let orden
+        of ordenes$ | async
+      ">
+
+      <ion-label>
+
+        <h2>
+
+          Orden #{{ orden.id }}
+
+        </h2>
+
+        <p>
+
+          Producto:
+          {{ orden.producto_id }}
+
+        </p>
+
+        <p>
+
+          Cantidad:
+          {{ orden.cantidad_solicitada }}
+
+        </p>
+
+        <p>
+
+          Estado:
+          {{ orden.estado }}
+
+        </p>
+
+      </ion-label>
+
+      <!-- BADGE -->
+
+      <ion-badge
+
+        [color]="
+
+          orden.estado
+          === 'pendiente'
+
+            ? 'warning'
+
+            : orden.estado
+              === 'en_produccion'
+
+                ? 'primary'
+
+                : orden.estado
+                  === 'completada'
+
+                    ? 'success'
+
+                    : 'danger'
+        ">
+
+        {{ orden.estado }}
+
+      </ion-badge>
+
+      <!-- ACTIONS -->
+
+      <ion-buttons slot="end">
+            <ion-button
+
+                color="tertiary"
+
+                (click)="
+                  verTimeline(
+                    orden.id
+                  )
+                ">
+
+                Timeline
+
+            </ion-button>
+        <ion-button
+
+          color="primary"
+
+          (click)="
+            cambiarEstado(
+              orden,
+              'en_produccion'
+            )
+          ">
+
+          Iniciar
+
+        </ion-button>
+
+        <ion-button
+
+          color="success"
+
+          (click)="
+            cambiarEstado(
+              orden,
+              'completada'
+            )
+          ">
+
+          Completar
+
+        </ion-button>
+
+      </ion-buttons>
+
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>

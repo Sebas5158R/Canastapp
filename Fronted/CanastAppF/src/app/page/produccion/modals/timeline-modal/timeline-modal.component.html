@@ -1,0 +1,34 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-title>
+
+      Trazabilidad
+
+    </ion-title>
+
+    <ion-buttons slot="end">
+
+      <ion-button
+        (click)="cerrar()">
+
+        Cerrar
+
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <app-timeline-produccion
+
+    [ordenId]="ordenId">
+
+  </app-timeline-produccion>
+
+</ion-content>

@@ -1,49 +1,171 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ApiService } from './api.service';
+import {
+  Injectable,
+  inject,
+} from '@angular/core';
+
+import {
+  Observable,
+  tap,
+} from 'rxjs';
+
+import {
+  ApiService,
+} from './api.service';
+
+import {
+  SocketService,
+} from './socket.service';
+
 import {
   MateriaPrima,
-  MovimientoInventario,
-  CreateMateriaPrimaRequest,
-  UpdateMateriaPrimaRequest,
-  CreateMovimientoRequest,
 } from '../interfaces/materia-prima.interface';
+
+import {
+  MovimientoInventario,
+} from '../interfaces/movimiento-inventario.interface';
+
+import {
+  InventarioState,
+} from '../state/inventario.state';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MateriaPrimaService {
 
-  private readonly path = 'inventario/materia-prima';
+  private api =
+    inject(ApiService);
 
-  constructor(private api: ApiService) {}
+  private socketService =
+    inject(SocketService);
 
-  getMateriaPrimas(): Observable<MateriaPrima[]> {
-    return this.api.get<MateriaPrima[]>(this.path);
+  private inventarioState =
+    inject(InventarioState);
+
+  constructor() {
+
+    this.socketService.listen(
+
+      'inventario-actualizado',
+
+      (response) => {
+
+        this.inventarioState
+          .setInventario(
+            response.inventario
+          );
+      }
+    );
   }
 
-  getMateriaPrimaPorId(id: number): Observable<MateriaPrima> {
-    return this.api.get<MateriaPrima>(`${this.path}/${id}`);
+  obtenerInventario():
+    Observable<MateriaPrima[]> {
+
+    return this.api
+      .get<MateriaPrima[]>(
+        'materia-prima'
+      )
+      .pipe(
+
+        tap((response) => {
+
+          this.inventarioState
+            .setInventario(
+              response
+            );
+        })
+      );
   }
 
-  crearMateriaPrima(data: CreateMateriaPrimaRequest): Observable<MateriaPrima> {
-    return this.api.post<MateriaPrima>(this.path, data);
+  crearMateriaPrima(
+    body: Partial<MateriaPrima>
+  ): Observable<MateriaPrima> {
+
+    return this.api
+      .post<MateriaPrima>(
+        'materia-prima',
+        body
+      )
+      .pipe(
+
+        tap((response) => {
+
+          this.inventarioState
+            .agregarMateria(
+              response
+            );
+        })
+      );
+  }
+  registrarMovimiento(
+
+  body: Partial<MovimientoInventario>
+
+): Observable<MovimientoInventario> {
+
+  return this.api.post<MovimientoInventario>(
+
+    'movimientos-inventario',
+
+    body
+  );
+}
+
+  actualizarMateriaPrima(
+
+    id: number,
+
+    body: Partial<MateriaPrima>
+
+  ): Observable<MateriaPrima> {
+
+    return this.api
+      .put<MateriaPrima>(
+        `materia-prima/${id}`,
+        body
+      )
+      .pipe(
+
+        tap((response) => {
+
+          this.inventarioState
+            .actualizarMateria(
+              response
+            );
+        })
+      );
   }
 
-  actualizarMateriaPrima(id: number, data: UpdateMateriaPrimaRequest): Observable<MateriaPrima> {
-    return this.api.put<MateriaPrima>(`${this.path}/${id}`, data);
+  eliminarMateriaPrima(
+    id: number
+  ): Observable<void> {
+
+    return this.api
+      .delete<void>(
+        `materia-prima/${id}`
+      )
+      .pipe(
+
+        tap(() => {
+
+          this.inventarioState
+            .eliminarMateria(
+              id
+            );
+        })
+      );
   }
 
-  eliminarMateriaPrima(id: number): Observable<{ message: string }> {
-    return this.api.delete<{ message: string }>(`${this.path}/${id}`);
-  }
+  obtenerMovimientos(
+    materiaPrimaId: number
+  ): Observable<
+    MovimientoInventario[]
+  > {
 
-  // ── Movimientos — pendiente de confirmar endpoint con el equipo ──
-  getMovimientosPorMateria(materiaPrimaId: number): Observable<MovimientoInventario[]> {
-    return this.api.get<MovimientoInventario[]>(`${this.path}/${materiaPrimaId}/movimientos`);
-  }
-
-  registrarMovimiento(data: CreateMovimientoRequest): Observable<MovimientoInventario> {
-    return this.api.post<MovimientoInventario>('movimientos-inventario', data);
+    return this.api.get<
+      MovimientoInventario[]
+    >(
+      `movimientos-inventario/materia-prima/${materiaPrimaId}`
+    );
   }
 }

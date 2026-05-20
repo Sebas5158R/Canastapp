@@ -1,99 +1,42 @@
-<ion-header class="page-header">
+<ion-header>
+
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button autoHide="false"></ion-menu-button>
-    </ion-buttons>
-    <ion-title class="page-title">Productos</ion-title>
+
+    <ion-title>
+      Productos
+    </ion-title>
+
   </ion-toolbar>
 
-  <ion-toolbar class="search-toolbar">
-    <ion-searchbar
-      [(ngModel)]="busqueda"
-      placeholder="Buscar producto..."
-      class="product-search"
-      debounce="300"
-    ></ion-searchbar>
-  </ion-toolbar>
 </ion-header>
 
-<ion-content class="page-content">
+<ion-content class="ion-padding">
 
-  <div class="content-wrapper">
+  <ion-list>
 
-    <!-- Estado vacío -->
-    <div class="empty-state" *ngIf="productosFiltrados.length === 0 && !cargando">
-      <ion-icon name="cube-outline" class="empty-icon"></ion-icon>
-      <p class="empty-text">No se encontraron productos</p>
-    </div>
+    <ion-item
+      *ngFor="
+        let producto of productos$ | async
+      ">
 
-    <!-- Spinner de carga -->
-    <div class="loading-state" *ngIf="cargando">
-      <ion-spinner name="crescent"></ion-spinner>
-    </div>
+      <ion-label>
 
-    <!-- Lista de fichas de producto -->
-    <div class="products-grid" *ngIf="!cargando">
-      <div
-        class="product-card"
-        *ngFor="let producto of productosFiltrados; trackBy: trackById"
-      >
-        <!-- Foto centrada -->
-        <div class="product-photo-wrap">
-          <div class="product-photo-placeholder">
-            <ion-icon name="cube-outline" class="photo-icon"></ion-icon>
-          </div>
-          <div class="product-badge">{{ producto.unidad_medida }}</div>
-        </div>
+        <h2>
+          {{ producto.nombre }}
+        </h2>
 
-        <!-- Info principal -->
-        <div class="product-info">
-          <h2 class="product-name">{{ producto.nombre }}</h2>
-          <p class="product-desc" *ngIf="producto.descripcion">{{ producto.descripcion }}</p>
+        <p>
+          {{ producto.descripcion }}
+        </p>
 
-          <div class="product-meta">
-            <span class="meta-item">
-              <ion-icon name="scale-outline"></ion-icon>
-              {{ producto.unidad_medida }}
-            </span>
-            <span class="meta-item" *ngIf="producto.costo_estimado">
-              <ion-icon name="cash-outline"></ion-icon>
-              ${{ producto.costo_estimado | number:'1.2-2' }}
-            </span>
-          </div>
-        </div>
+        <p>
+          ${{ producto.precio }}
+        </p>
 
-        <!-- Sección de ingredientes (desplegable) -->
-        <div class="ingredients-section">
-          <button
-            class="ingredients-toggle"
-            (click)="toggleProducto(producto)"
-          >
-            <span class="toggle-label">
-              <ion-icon name="leaf-outline"></ion-icon>
-              Ingredientes
-              <span class="ingredients-count">{{ producto.recetas.length }}</span>
-            </span>
-            <span class="toggle-arrow" [class.open]="producto.expandido">›</span>
-          </button>
+      </ion-label>
 
-          <div class="ingredients-list" [class.visible]="producto.expandido">
-            <div
-              class="ingredient-row"
-              *ngFor="let receta of producto.recetas; trackBy: trackById"
-            >
-              <span class="ingredient-name">
-                {{ nombreIngrediente[receta.ingrediente_id] || 'Ingrediente #' + receta.ingrediente_id }}
-              </span>
-              <span class="ingredient-qty">
-                {{ receta.cantidad_necesaria }} {{ receta.unidad_medida }}
-              </span>
-            </div>
-          </div>
-        </div>
+    </ion-item>
 
-      </div>
-    </div>
-
-  </div>
+  </ion-list>
 
 </ion-content>

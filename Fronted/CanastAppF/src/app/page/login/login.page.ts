@@ -1,77 +1,116 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
 import {
-  IonButton,
+  Component,
+  inject,
+} from '@angular/core';
+
+import {
+  Router,
+} from '@angular/router';
+
+import {
+  FormsModule,
+} from '@angular/forms';
+
+import {
   IonContent,
-  IonIcon,
   IonInput,
+  IonButton,
   IonItem,
   IonLabel,
-  IonNote,
-  IonSpinner,
+  IonCard,
+  IonCardContent,
+  ToastController,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { lockClosedOutline, mailOutline, logInOutline } from 'ionicons/icons';
-import { UsuarioService } from '../../data/services/usuario.service';
+
+import { AuthService }
+from 'src/app/data/services/auth.service';
 
 @Component({
   selector: 'app-login',
+
   templateUrl: './login.page.html',
+
   styleUrls: ['./login.page.scss'],
+
   standalone: true,
+
   imports: [
-    CommonModule,
     FormsModule,
+
     IonContent,
-    IonButton,
-    IonIcon,
     IonInput,
+    IonButton,
     IonItem,
     IonLabel,
-    IonNote,
-    IonSpinner,
+    IonCard,
+    IonCardContent,
   ],
 })
 export class LoginPage {
-  correo = '';
-  contrasena = '';
-  cargando = false;
-  error = '';
 
-  constructor(
-    private usuarioService: UsuarioService,
-    private router: Router,
-    private route: ActivatedRoute,
-  ) {
-    addIcons({ lockClosedOutline, mailOutline, logInOutline });
-  }
+  private authService =
+    inject(AuthService);
 
-  login(): void {
-    this.error = '';
+  private router =
+    inject(Router);
 
-    if (!this.correo.trim() || !this.contrasena.trim()) {
-      this.error = 'Ingresa correo y contraseña.';
-      return;
-    }
+  private toastController =
+    inject(ToastController);
 
-    this.cargando = true;
+  email = '';
 
-    this.usuarioService.login({
-      correo: this.correo.trim(),
-      contrasena: this.contrasena,
+  password = '';
+
+  loading = false;
+
+  async login() {
+
+    this.loading = true;
+
+    this.authService.login({
+
+      correo: this.email,
+
+      contrasena: this.password,
+
     }).subscribe({
-      next: () => {
-        const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo') || '/home';
-        this.router.navigateByUrl(redirectTo);
+
+      next: async () => {
+
+        this.loading = false;
+
+        const toast =
+          await this.toastController.create({
+
+            message: 'Bienvenido',
+
+            duration: 2000,
+
+            position: 'bottom',
+          });
+
+        await toast.present();
+
+        this.router.navigate(['/dashboard']);
       },
-      error: (err) => {
-        this.error = err?.error?.message || 'No se pudo iniciar sesión.';
-        this.cargando = false;
-      },
-      complete: () => {
-        this.cargando = false;
+
+      error: async (error) => {
+
+        this.loading = false;
+
+        const toast =
+          await this.toastController.create({
+
+            message:
+              error?.error?.message ||
+              'Credenciales inválidas',
+
+            duration: 3000,
+
+            color: 'danger',
+          });
+
+        await toast.present();
       },
     });
   }

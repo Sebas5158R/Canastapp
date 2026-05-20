@@ -1,0 +1,191 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-title>
+
+      {{
+        materia
+          ? 'Editar'
+          : 'Nueva'
+      }}
+
+      Materia Prima
+
+    </ion-title>
+
+    <ion-buttons slot="end">
+
+      <ion-button
+        (click)="cerrar()">
+
+        Cerrar
+
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+
+    <!-- NOMBRE -->
+
+    <ion-item>
+
+      <ion-input
+
+        label="Nombre"
+
+        labelPlacement="stacked"
+
+        [(ngModel)]="form.nombre">
+
+      </ion-input>
+
+    </ion-item>
+
+    <!-- DESCRIPCION -->
+
+    <ion-item>
+
+      <ion-textarea
+
+        label="Descripción"
+
+        labelPlacement="stacked"
+
+        [(ngModel)]="form.descripcion">
+
+      </ion-textarea>
+
+    </ion-item>
+
+    <!-- STOCK -->
+
+    <ion-item>
+
+      <ion-input
+
+        type="number"
+
+        label="Cantidad"
+
+        labelPlacement="stacked"
+
+        [(ngModel)]="
+          form.cantidad_disponible">
+
+      </ion-input>
+
+    </ion-item>
+
+    <!-- UNIDAD -->
+
+    <ion-item>
+
+      <ion-select
+
+        label="Unidad"
+
+        labelPlacement="stacked"
+
+        [(ngModel)]="
+          form.unidad_medida">
+
+        <ion-select-option value="kg">
+          KG
+        </ion-select-option>
+
+        <ion-select-option value="unidad">
+          Unidad
+        </ion-select-option>
+
+        <ion-select-option value="litro">
+          Litro
+        </ion-select-option>
+
+      </ion-select>
+
+    </ion-item>
+
+    <!-- STOCK MIN -->
+
+    <ion-item>
+
+      <ion-input
+
+        type="number"
+
+        label="Stock mínimo"
+
+        labelPlacement="stacked"
+
+        [(ngModel)]="
+          form.stock_minimo">
+
+      </ion-input>
+
+    </ion-item>
+
+    <!-- STOCK MAX -->
+
+    <ion-item>
+
+      <ion-input
+
+        type="number"
+
+        label="Stock máximo"
+
+        labelPlacement="stacked"
+
+        [(ngModel)]="
+          form.stock_maximo">
+
+      </ion-input>
+
+    </ion-item>
+
+    <!-- FECHA -->
+
+    <ion-item>
+
+      <ion-input
+
+        type="date"
+
+        label="Vencimiento"
+
+        labelPlacement="stacked"
+
+        [(ngModel)]="
+          form.fecha_vencimiento">
+
+      </ion-input>
+
+    </ion-item>
+
+  </ion-list>
+
+  <!-- BOTON -->
+
+  <div class="ion-padding">
+
+    <ion-button
+
+      expand="block"
+
+      (click)="guardar()">
+
+      Guardar
+
+    </ion-button>
+
+  </div>
+
+</ion-content>

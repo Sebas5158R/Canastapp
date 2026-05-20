@@ -1,113 +1,129 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd, RouterModule } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { CommonModule } from '@angular/common';
 import {
-  IonApp,
-  IonMenu,
-  IonContent,
-  IonIcon,
-  IonRouterOutlet,
-  MenuController,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  gridOutline, cubeOutline, layersOutline, documentTextOutline,
-  timeOutline, settingsOutline, chevronForwardOutline,
-  logOutOutline, notificationsOutline, menuOutline,
-} from 'ionicons/icons';
-import { UsuarioService } from '../data/services/usuario.service';
+  Component,
+  inject,
+} from '@angular/core';
 
-export interface MenuItem {
-  label: string;
-  icon: string;
-  url: string;
-}
+import {
+  CommonModule,
+} from '@angular/common';
+
+import {
+  Router,
+  RouterOutlet,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
+
+import {
+  IonicModule,
+} from '@ionic/angular';
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
+
+  templateUrl: './app.component.html',
+
+  styleUrls: ['./app.component.scss'],
+
   standalone: true,
+
   imports: [
     CommonModule,
-    RouterModule,
-    IonApp,
-    IonMenu,
-    IonContent,
-    IonIcon,
-    IonRouterOutlet,
+    IonicModule,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
   ],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
-  userName = 'Invitado';
-  userRole = 'Sin sesión';
-  userAvatar: string = 'assets/images/default-avatar.png';
+  private router =
+    inject(Router);
 
-  activeUrl: string = '';
-  isAuthenticated = false;
+  // ============================================
+  // USER
+  // ============================================
 
-  menuItems: MenuItem[] = [
-    { label: 'Dashboard',            icon: 'grid-outline',          url: '/home' },
-    { label: 'Productos',            icon: 'cube-outline',          url: '/productos' },
-    { label: 'Inventario',           icon: 'layers-outline',        url: '/inventario' },
-    { label: 'Órdenes',              icon: 'document-text-outline', url: '/ordenes' },
-    { label: 'Historial de Órdenes', icon: 'time-outline',          url: '/historial-ordenes' },
+  userName =
+    'Administrador';
+
+  userRole =
+    'ERP Manager';
+
+  userAvatar =
+    'https://i.pravatar.cc/150?img=3';
+
+  // ============================================
+  // MENU
+  // ============================================
+
+  showMenu = true;
+
+  menuItems = [
+
+    {
+      title: 'Dashboard',
+      url: '/dashboard',
+      icon: 'grid',
+    },
+
+    {
+      title: 'Producción',
+      url: '/produccion',
+      icon: 'construct',
+    },
+
+    {
+      title: 'Inventario',
+      url: '/inventario',
+      icon: 'cube',
+    },
+
+    {
+      title: 'Productos',
+      url: '/productos',
+      icon: 'basket',
+    },
+
+    {
+      title: 'Órdenes',
+      url: '/ordenes',
+      icon: 'clipboard',
+    },
   ];
 
-  constructor(
-    private router: Router,
-    private menuCtrl: MenuController,
-    private usuarioService: UsuarioService,
-  ) {
-    addIcons({
-      gridOutline, cubeOutline, layersOutline, documentTextOutline,
-      timeOutline, settingsOutline, chevronForwardOutline,
-      logOutOutline, notificationsOutline, menuOutline,
-    });
+  // ============================================
+  // NAVIGATION
+  // ============================================
+
+  navigate(
+    url: string
+  ): void {
+
+    this.router.navigate([
+      url,
+    ]);
+  }
+  logout(): void {
+
+  localStorage.clear();
+
+  this.router.navigate([
+    '/login',
+  ]);
+}
+  isActive(
+    url: string
+  ): boolean {
+
+    return this.router.url === url;
   }
 
-  ngOnInit(): void {
-    this.syncAuthState();
+  goToSettings():
+  void {
 
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.activeUrl = event.urlAfterRedirects;
-        this.syncAuthState();
-      });
-  }
-
-  get showMenu(): boolean {
-    return this.isAuthenticated && this.activeUrl !== '/login';
-  }
-
-  syncAuthState(): void {
-    this.isAuthenticated = this.usuarioService.estaAutenticado();
-
-    const usuario = this.usuarioService.getUsuarioActual();
-    this.userName = usuario?.nombre_completo || 'Invitado';
-    this.userRole = usuario?.rol?.nombre || 'Sin sesión';
-  }
-
-  isActive(url: string): boolean {
-    return this.activeUrl === url || this.activeUrl.startsWith(url + '/');
-  }
-
-  async navigate(url: string): Promise<void> {
-    await this.menuCtrl.close();
-    this.router.navigateByUrl(url);
-  }
-
-  async goToSettings(): Promise<void> {
-    await this.menuCtrl.close();
-    console.log('Configuración — próximamente');
-  }
-
-  async logout(): Promise<void> {
-    await this.menuCtrl.close();
-    this.usuarioService.logout();
-    this.router.navigateByUrl('/login');
+    this.router.navigate([
+      '/settings',
+    ]);
   }
 }

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import {
   OrdenProduccion,
-  EstadoOrden,
+  EstadoProduccion,
   RegistroProduccion,
   EntregaProducto,
   TrazabilidadProceso,
@@ -25,7 +25,7 @@ export class OrdenProduccionService {
     return this.api.get<OrdenProduccion[]>('ordenes-produccion');
   }
 
-  getOrdenesPorEstado(estado: EstadoOrden): Observable<OrdenProduccion[]> {
+  getOrdenesPorEstado(estado: EstadoProduccion): Observable<OrdenProduccion[]> {
     return this.api.get<OrdenProduccion[]>(`ordenes-produccion?estado=${estado}`);
   }
 

@@ -1,0 +1,148 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-title>
+
+      Dashboard ERP
+
+    </ion-title>
+
+    <ion-buttons slot="end">
+
+      <ion-button
+        color="success"
+        (click)="exportarExcel()">
+
+        Excel
+
+      </ion-button>
+
+      <ion-button
+        color="danger"
+        (click)="exportarPDF()">
+
+        PDF
+
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <!-- REFRESH -->
+
+  <ion-refresher
+    slot="fixed"
+    (ionRefresh)="refrescar($event)">
+
+    <ion-refresher-content>
+    </ion-refresher-content>
+
+  </ion-refresher>
+
+  <!-- LOADING -->
+
+  <div
+    *ngIf="loading"
+    class="ion-text-center ion-padding">
+
+    <ion-spinner>
+    </ion-spinner>
+
+  </div>
+
+  <!-- DASHBOARD -->
+
+<ng-container
+  *ngIf="(resumen$ | async) as resumen; else vacio">
+
+  <ion-grid>
+
+    <ion-row>
+
+      <!-- PENDIENTES -->
+
+      <ion-col
+        size="6"
+        sizeMd="3">
+
+        <app-kpi-card
+          title="Pendientes"
+          [value]="resumen.ordenes_pendientes"
+          color="warning"
+          icon="time">
+
+        </app-kpi-card>
+
+      </ion-col>
+
+      <!-- PRODUCCION -->
+
+      <ion-col
+        size="6"
+        sizeMd="3">
+
+        <app-kpi-card
+          title="Producción"
+          [value]="resumen.ordenes_produccion"
+          color="primary"
+          icon="construct">
+
+        </app-kpi-card>
+
+      </ion-col>
+
+      <!-- COMPLETADAS -->
+
+      <ion-col
+        size="6"
+        sizeMd="3">
+
+        <app-kpi-card
+          title="Completadas"
+          [value]="resumen.ordenes_completadas"
+          color="success"
+          icon="checkmark-circle">
+
+        </app-kpi-card>
+
+      </ion-col>
+
+      <!-- STOCK -->
+
+      <ion-col
+        size="6"
+        sizeMd="3">
+
+        <app-kpi-card
+          title="Stock crítico"
+          [value]="resumen.stock_critico"
+          color="danger"
+          icon="alert-circle">
+
+        </app-kpi-card>
+
+      </ion-col>
+
+    </ion-row>
+
+  </ion-grid>
+
+</ng-container>
+
+<ng-template #vacio>
+
+  <div class="ion-padding ion-text-center">
+
+    No hay datos disponibles
+
+  </div>
+
+</ng-template>
+
+</ion-content>

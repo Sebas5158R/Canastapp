@@ -1,57 +1,171 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { inject, Injectable } from '@angular/core';
+
+import {
+  HttpClient,
+  HttpHeaders,
+} from '@angular/common/http';
+import {
+  NetworkService,
+} from './network.service';
+
+import {
+  OfflineQueueService,
+} from './offline-queue.service';
+import {
+  Observable,
+  timeout,
+  retry,
+  catchError,
+  throwError,
+} from 'rxjs';
+
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
 
-  readonly BASE_URL = 'http://localhost:3000/api';
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = environment.apiUrl;
+
+  private readonly timeoutMs = 15000;
+  private networkService =
+  inject(NetworkService);
+
+private offlineQueueService =
+  inject(OfflineQueueService);
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     });
   }
 
-  get<T>(path: string, params?: HttpParams): Observable<T> {
+  get<T>(endpoint: string): Observable<T> {
+
     return this.http
-      .get<T>(`${this.BASE_URL}/${path}`, { headers: this.getHeaders(), params })
-      .pipe(catchError(this.handleError));
+      .get<T>(
+        `${this.apiUrl}/${endpoint}`,
+        {
+          headers: this.getHeaders(),
+        }
+      )
+      .pipe(
+        timeout(this.timeoutMs),
+        retry(1),
+        catchError(this.handleError)
+      );
   }
 
-  post<T>(path: string, body: unknown): Observable<T> {
-    return this.http
-      .post<T>(`${this.BASE_URL}/${path}`, body, { headers: this.getHeaders() })
-      .pipe(catchError(this.handleError));
+  post<T>(
+  endpoint: string,
+  body: any
+): Observable<T> {
+
+  if (
+    !this.networkService.isOnline()
+  ) {
+
+    this.offlineQueueService
+      .agregarOperacion(
+        endpoint,
+        'POST',
+        body
+      );
+
+    return throwError(
+      () =>
+        new Error(
+          'SIN INTERNET'
+        )
+    );
   }
 
-  put<T>(path: string, body: unknown): Observable<T> {
+  return this.http
+    .post<T>(
+      `${this.apiUrl}/${endpoint}`,
+      body,
+      {
+        headers:
+          this.getHeaders(),
+      }
+    )
+    .pipe(
+      timeout(
+        this.timeoutMs
+      ),
+
+      catchError(
+        this.handleError
+      )
+    );
+}
+
+  patch<T>(
+    endpoint: string,
+    body: any
+  ): Observable<T> {
+
     return this.http
-      .put<T>(`${this.BASE_URL}/${path}`, body, { headers: this.getHeaders() })
-      .pipe(catchError(this.handleError));
+      .patch<T>(
+        `${this.apiUrl}/${endpoint}`,
+        body,
+        {
+          headers: this.getHeaders(),
+        }
+      )
+      .pipe(
+        timeout(this.timeoutMs),
+        catchError(this.handleError)
+      );
   }
 
-  patch<T>(path: string, body: unknown): Observable<T> {
+  put<T>(
+    endpoint: string,
+    body: any
+  ): Observable<T> {
+
     return this.http
-      .patch<T>(`${this.BASE_URL}/${path}`, body, { headers: this.getHeaders() })
-      .pipe(catchError(this.handleError));
+      .put<T>(
+        `${this.apiUrl}/${endpoint}`,
+        body,
+        {
+          headers: this.getHeaders(),
+        }
+      )
+      .pipe(
+        timeout(this.timeoutMs),
+        catchError(this.handleError)
+      );
   }
 
-  delete<T>(path: string): Observable<T> {
+  delete<T>(endpoint: string): Observable<T> {
+
     return this.http
-      .delete<T>(`${this.BASE_URL}/${path}`, { headers: this.getHeaders() })
-      .pipe(catchError(this.handleError));
+      .delete<T>(
+        `${this.apiUrl}/${endpoint}`,
+        {
+          headers: this.getHeaders(),
+        }
+      )
+      .pipe(
+        timeout(this.timeoutMs),
+        catchError(this.handleError)
+      );
   }
 
-  private handleError(error: any): Observable<never> {
-    console.error('API Error:', error);
-    return throwError(() => error);
+  private handleError(error: any) {
+
+    console.error(
+      'API ERROR:',
+      error
+    );
+
+    return throwError(
+      () => error
+    );
   }
 }

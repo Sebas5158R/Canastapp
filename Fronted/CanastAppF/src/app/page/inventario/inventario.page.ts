@@ -1,130 +1,222 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import {
-  IonContent, IonHeader, IonTitle, IonToolbar,
-  IonButtons, IonMenuButton, IonIcon, IonSpinner,
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
+  Component,
+  OnInit,
+  inject,
+} from '@angular/core';
+
 import {
-  addCircleOutline, closeOutline, alertCircleOutline,
-  checkmarkCircleOutline, warningOutline, menuOutline,
-  layersOutline,
-} from 'ionicons/icons';
-import { MateriaPrimaService } from '../../data/services/materia-prima.service';
+  CommonModule,
+} from '@angular/common';
+
+import {
+  FormsModule,
+} from '@angular/forms';
+
+import {
+  IonicModule,
+  AlertController,
+  ToastController,
+  ModalController,
+} from '@ionic/angular';
+import {
+  MovimientosComponent,
+} from './modals/movimientos/movimientos.component';
+
+import {
+  MateriaPrimaService,
+} from 'src/app/data/services/materia-prima.service';
+import {
+  MateriaFormComponent,
+} from './modals/materia-form/materia-form.component';
+
 import {
   MateriaPrima,
-  CreateMateriaPrimaRequest,
-} from '../../data/interfaces/materia-prima.interface';
-
-type EstadoStock = 'CRÍTICO' | 'NORMAL' | 'EXCESO';
-
-interface MateriaPrimaVM extends MateriaPrima {
-  estado_stock: EstadoStock;
-}
+} from 'src/app/data/interfaces/materia-prima.interface';
+import {
+  InventarioState,
+} from 'src/app/data/state/inventario.state';
 
 @Component({
   selector: 'app-inventario',
-  templateUrl: './inventario.page.html',
-  styleUrls: ['./inventario.page.scss'],
+
+  templateUrl:
+    './inventario.page.html',
+
+  styleUrls: [
+    './inventario.page.scss',
+  ],
+
   standalone: true,
+
   imports: [
-    CommonModule, FormsModule,
-    IonContent, IonHeader, IonTitle, IonToolbar,
-    IonButtons, IonMenuButton, IonIcon, IonSpinner,
+    CommonModule,
+    FormsModule,
+    IonicModule,
   ],
 })
-export class InventarioPage implements OnInit {
+export class InventarioPage
+implements OnInit {
 
-  cargando = false;
-  formularioVisible = false;
-  materias: MateriaPrimaVM[] = [];
+  private materiaPrimaService =
+    inject(MateriaPrimaService);
 
-  nuevaMateria: CreateMateriaPrimaRequest = {
-    nombre: '',
-    descripcion: '',
-    cantidad_disponible: 0,
-    unidad_medida: 'kg',
-    stock_minimo: 0,
-    stock_maximo: 0,
-    fecha_vencimiento: '',
-  };
+  private inventarioState =
+    inject(InventarioState);
 
-  unidades = ['kg', 'g', 'l', 'ml', 'unidad', 'docena', 'caja'];
+  private toastController =
+    inject(ToastController);
 
-  constructor(private materiaPrimaService: MateriaPrimaService) {
-    addIcons({
-      addCircleOutline, closeOutline, alertCircleOutline,
-      checkmarkCircleOutline, warningOutline, menuOutline, layersOutline,
-    });
-  }
+  private modalController =
+    inject(ModalController);
+
+  private alertController =
+    inject(AlertController);
+
+  inventario$ =
+    this.inventarioState
+      .inventario$;
+
+  busqueda = '';
 
   ngOnInit(): void {
-    this.cargarMaterias();
+
+    this.cargarInventario();
   }
 
-  cargarMaterias(): void {
-    this.cargando = true;
-    this.materiaPrimaService.getMateriaPrimas().subscribe({
-      next: (data: MateriaPrima[]) => {
-        this.materias = data.map((m) => ({
-          ...m,
-          estado_stock: this.calcularEstado(
-            m.cantidad_disponible,
-            m.stock_minimo,
-            m.stock_maximo,
-          ),
-        }));
-        this.cargando = false;
-      },
-      error: (err) => {
-        console.error('Error al cargar materias:', err);
-        this.cargando = false;
-      },
-    });
+  cargarInventario(): void {
+
+    this.materiaPrimaService
+      .obtenerInventario()
+      .subscribe();
+  }
+  async abrirMovimientos(
+  materia: MateriaPrima
+): Promise<void> {
+
+  const modal =
+    await this.modalController
+      .create({
+
+        component:
+          MovimientosComponent,
+
+        componentProps: {
+          materia,
+        },
+      });
+
+  await modal.present();
+}
+  async crearMateria():
+Promise<void> {
+
+  const modal =
+    await this.modalController
+      .create({
+
+        component:
+          MateriaFormComponent,
+      });
+
+  await modal.present();
+
+  await modal.onDidDismiss();
+}
+async editarMateria(
+  materia: MateriaPrima
+): Promise<void> {
+
+  const modal =
+    await this.modalController
+      .create({
+
+        component:
+          MateriaFormComponent,
+
+        componentProps: {
+          materia,
+        },
+      });
+
+  await modal.present();
+
+  await modal.onDidDismiss();
+}
+async eliminarMateria(
+  materia: MateriaPrima
+): Promise<void> {
+
+  const alert =
+    await this.alertController
+      .create({
+
+        header: 'Eliminar',
+
+        message:
+          `¿Eliminar ${materia.nombre}?`,
+
+        buttons: [
+
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+          },
+
+          {
+            text: 'Eliminar',
+
+            role: 'destructive',
+
+            handler: () => {
+
+              this.materiaPrimaService
+                .eliminarMateriaPrima(
+                  materia.id
+                )
+                .subscribe();
+            },
+          },
+        ],
+      });
+
+  await alert.present();
+}
+  async refrescar(
+    event: any
+  ): Promise<void> {
+
+    this.materiaPrimaService
+      .obtenerInventario()
+      .subscribe({
+
+        next: () => {
+
+          event.target.complete();
+        },
+
+        error: () => {
+
+          event.target.complete();
+        },
+      });
   }
 
-  toggleFormulario(): void {
-    this.formularioVisible = !this.formularioVisible;
-    if (!this.formularioVisible) this.resetFormulario();
-  }
+  async mostrarToast(
+    mensaje: string,
+    color = 'success'
+  ): Promise<void> {
 
-  resetFormulario(): void {
-    this.nuevaMateria = {
-      nombre: '', descripcion: '', cantidad_disponible: 0,
-      unidad_medida: 'kg', stock_minimo: 0, stock_maximo: 0, fecha_vencimiento: '',
-    };
-  }
+    const toast =
+      await this.toastController
+        .create({
 
-  guardarMateria(): void {
-    if (!this.nuevaMateria.nombre.trim()) return;
+          message: mensaje,
 
-    this.materiaPrimaService.crearMateriaPrima(this.nuevaMateria).subscribe({
-      next: (creada: MateriaPrima) => {
-        const nueva: MateriaPrimaVM = {
-          ...creada,
-          estado_stock: this.calcularEstado(
-            creada.cantidad_disponible,
-            creada.stock_minimo,
-            creada.stock_maximo,
-          ),
-        };
-        this.materias = [nueva, ...this.materias];
-        this.toggleFormulario();
-      },
-      error: (err) => {
-        console.error('Error al guardar materia:', err);
-      },
-    });
-  }
+          duration: 2000,
 
-  calcularEstado(cantidad: number, min: number, max: number): EstadoStock {
-    if (cantidad <= min) return 'CRÍTICO';
-    if (cantidad >= max) return 'EXCESO';
-    return 'NORMAL';
-  }
+          color,
+        });
 
-  trackById(_: number, item: { id: number }): number {
-    return item.id;
+    await toast.present();
   }
 }

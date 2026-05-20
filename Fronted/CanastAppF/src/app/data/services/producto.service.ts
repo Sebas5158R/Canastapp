@@ -1,53 +1,134 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ApiService } from './api.service';
+import {
+  Injectable,
+  inject,
+} from '@angular/core';
+
+import {
+  Observable,
+  tap,
+} from 'rxjs';
+
+import { ApiService }
+from './api.service';
+
 import {
   Producto,
-  Receta,
+  RecetaItem,
   CreateProductoRequest,
   UpdateProductoRequest,
 } from '../interfaces/producto.interface';
+
+import { ProductosState } from '../state/producto.state';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductoService {
 
-  constructor(private api: ApiService) {}
+  private api =
+    inject(ApiService);
 
-  // ── Productos ──
+  private productosState =
+    inject(ProductosState);
 
-  getProductos(): Observable<Producto[]> {
-    return this.api.get<Producto[]>('productos');
+  private readonly path =
+    'productos';
+
+  getProductos():
+    Observable<Producto[]> {
+
+    return this.api
+      .get<Producto[]>(
+        this.path
+      )
+      .pipe(
+        tap((response) => {
+
+          this.productosState
+            .setProductos(response);
+        })
+      );
   }
 
-  getProductoPorId(id: number): Observable<Producto> {
-    return this.api.get<Producto>(`productos/${id}`);
+  getProductoPorId(
+    id: number
+  ): Observable<Producto> {
+
+    return this.api.get<Producto>(
+      `${this.path}/${id}`
+    );
   }
 
-  crearProducto(data: CreateProductoRequest): Observable<Producto> {
-    return this.api.post<Producto>('productos', data);
+  crearProducto(
+    data: CreateProductoRequest
+  ): Observable<Producto> {
+
+    return this.api
+      .post<Producto>(
+        this.path,
+        data
+      )
+      .pipe(
+        tap((response) => {
+
+          this.productosState
+            .agregarProducto(response);
+        })
+      );
   }
 
-  actualizarProducto(id: number, data: UpdateProductoRequest): Observable<Producto> {
-    return this.api.put<Producto>(`productos/${id}`, data);
+  actualizarProducto(
+    id: number,
+    data: UpdateProductoRequest
+  ): Observable<Producto> {
+
+    return this.api
+      .patch<Producto>(
+        `${this.path}/${id}`,
+        data
+      )
+      .pipe(
+        tap((response) => {
+
+          this.productosState
+            .actualizarProducto(response);
+        })
+      );
   }
 
-  eliminarProducto(id: number): Observable<void> {
-    return this.api.delete<void>(`productos/${id}`);
+  actualizarReceta(
+    id: number,
+    receta: RecetaItem[]
+  ): Observable<Producto> {
+
+    return this.api
+      .put<Producto>(
+        `${this.path}/${id}/receta`,
+        { receta }
+      )
+      .pipe(
+        tap((response) => {
+
+          this.productosState
+            .actualizarProducto(response);
+        })
+      );
   }
 
-  // ── Recetas ──
+  eliminarProducto(
+    id: number
+  ): Observable<any> {
 
-  getRecetasPorProducto(productoId: number): Observable<Receta[]> {
-    return this.api.get<Receta[]>(`productos/${productoId}/recetas`);
-  }
+    return this.api
+      .delete<any>(
+        `${this.path}/${id}`
+      )
+      .pipe(
+        tap(() => {
 
-  crearReceta(data: Omit<Receta, 'id' | 'created_at'>): Observable<Receta> {
-    return this.api.post<Receta>('recetas', data);
-  }
-
-  eliminarReceta(id: number): Observable<void> {
-    return this.api.delete<void>(`recetas/${id}`);
+          this.productosState
+            .eliminarProducto(id);
+        })
+      );
   }
 }

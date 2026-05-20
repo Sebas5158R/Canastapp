@@ -1,28 +1,55 @@
-export interface Producto {
-  id: number;
-  nombre: string;
-  descripcion?: string;
-  unidad_medida: string;
-  costo_estimado?: number;
-  created_at?: string;
-  updated_at?: string;
-}
+export interface RecetaItem {
 
-export interface Receta {
-  id: number;
+  id?: number;
+
   producto_id: number;
-  producto?: Producto;
+
   ingrediente_id: number;
+
   cantidad_necesaria: number;
+
   unidad_medida: string;
-  created_at?: string;
+
+  ingrediente?: {
+
+    id: number;
+
+    nombre: string;
+
+    unidad_medida: string;
+  };
+}
+export interface Producto {
+
+  id: number;
+
+  nombre: string;
+
+  descripcion?: string;
+
+  precio: number;
+
+  receta?: RecetaItem[];
+
+  createdAt?: string;
+
+  updatedAt?: string;
 }
 
 export interface CreateProductoRequest {
+
   nombre: string;
+
   descripcion?: string;
-  unidad_medida: string;
-  costo_estimado?: number;
+
+  precio: number;
 }
 
-export interface UpdateProductoRequest extends Partial<CreateProductoRequest> {}
+export interface UpdateProductoRequest {
+
+  nombre?: string;
+
+  descripcion?: string;
+
+  precio?: number;
+}

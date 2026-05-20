@@ -14,52 +14,19 @@ import {
 })
 export class UsuarioService {
 
+  private readonly path = 'usuarios';
+
   constructor(private api: ApiService) {}
 
-  // ── Autenticación ──
-
-  login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.api.post<LoginResponse>('auth/login', credentials).pipe(
-      tap((res) => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('usuario', JSON.stringify(res.user));
-      })
-    );
-  }
-
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
-  }
-
-  getUsuarioActual(): Usuario | null {
-    const data = localStorage.getItem('usuario');
-    return data ? JSON.parse(data) : null;
-  }
-
-  estaAutenticado(): boolean {
-    return !!localStorage.getItem('token');
-  }
-
-  // ── CRUD Usuarios ──
-
   getUsuarios(): Observable<Usuario[]> {
-    return this.api.get<Usuario[]>('usuarios');
+    return this.api.get<Usuario[]>(this.path);
   }
 
-  getUsuarioPorId(id: number): Observable<Usuario> {
-    return this.api.get<Usuario>(`usuarios/${id}`);
+  getRoles(): Observable<string[]> {
+    return this.api.get<string[]>(`${this.path}/roles`);
   }
 
-  crearUsuario(data: CreateUsuarioRequest): Observable<Usuario> {
-    return this.api.post<Usuario>('usuarios', data);
-  }
-
-  actualizarUsuario(id: number, data: Partial<CreateUsuarioRequest>): Observable<Usuario> {
-    return this.api.put<Usuario>(`usuarios/${id}`, data);
-  }
-
-  desactivarUsuario(id: number): Observable<void> {
-    return this.api.patch<void>(`usuarios/${id}/desactivar`, {});
+  getPermisosRol(nombreRol: string): Observable<string[]> {
+    return this.api.get<string[]>(`${this.path}/roles/${nombreRol}/permisos`);
   }
 }

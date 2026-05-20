@@ -1,0 +1,222 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-title>
+
+      Movimientos
+
+    </ion-title>
+
+    <ion-buttons slot="end">
+
+      <ion-button
+        (click)="cerrar()">
+
+        Cerrar
+
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <!-- INFO -->
+
+  <ion-card>
+
+    <ion-card-header>
+
+      <ion-card-title>
+        {{ materia.nombre }}
+      </ion-card-title>
+
+    </ion-card-header>
+
+    <ion-card-content>
+
+      Stock actual:
+
+      <strong>
+
+        {{ materia.cantidad_disponible }}
+
+        {{ materia.unidad_medida }}
+
+      </strong>
+
+    </ion-card-content>
+
+  </ion-card>
+
+  <!-- FORM -->
+
+  <ion-list>
+
+    <!-- TIPO -->
+
+    <ion-item>
+
+      <ion-select
+
+        label="Tipo"
+
+        labelPlacement="stacked"
+
+        [(ngModel)]="
+          form.tipo_movimiento">
+
+        <ion-select-option
+          value="entrada">
+
+          Entrada
+
+        </ion-select-option>
+
+        <ion-select-option
+          value="salida">
+
+          Salida
+
+        </ion-select-option>
+
+        <ion-select-option
+          value="ajuste">
+
+          Ajuste
+
+        </ion-select-option>
+
+      </ion-select>
+
+    </ion-item>
+
+    <!-- CANTIDAD -->
+
+    <ion-item>
+
+      <ion-input
+
+        type="number"
+
+        label="Cantidad"
+
+        labelPlacement="stacked"
+
+        [(ngModel)]="
+          form.cantidad">
+
+      </ion-input>
+
+    </ion-item>
+
+    <!-- OBS -->
+
+    <ion-item>
+
+      <ion-textarea
+
+        label="Observaciones"
+
+        labelPlacement="stacked"
+
+        [(ngModel)]="
+          form.observaciones">
+
+      </ion-textarea>
+
+    </ion-item>
+
+  </ion-list>
+
+  <!-- BTN -->
+
+  <div class="ion-padding">
+
+    <ion-button
+
+      expand="block"
+
+      (click)="registrarMovimiento()">
+
+      Registrar Movimiento
+
+    </ion-button>
+
+  </div>
+
+  <!-- HISTORIAL -->
+
+  <ion-list>
+
+    <ion-list-header>
+
+      Historial
+
+    </ion-list-header>
+
+    <ion-item
+      *ngFor="
+        let movimiento
+        of movimientos
+      ">
+
+      <ion-label>
+
+        <h2>
+
+          {{
+            movimiento.tipo_movimiento
+          }}
+
+        </h2>
+
+        <p>
+
+          Cantidad:
+          {{ movimiento.cantidad }}
+
+        </p>
+
+        <p>
+
+          {{
+            movimiento.fecha_movimiento
+          }}
+
+        </p>
+
+      </ion-label>
+
+      <ion-badge
+
+        [color]="
+
+          movimiento.tipo_movimiento
+          === 'entrada'
+
+            ? 'success'
+
+            : movimiento.tipo_movimiento
+              === 'salida'
+
+                ? 'danger'
+
+                : 'warning'
+        ">
+
+        {{
+          movimiento.tipo_movimiento
+        }}
+
+      </ion-badge>
+
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>

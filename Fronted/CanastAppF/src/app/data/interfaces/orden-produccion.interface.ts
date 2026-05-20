@@ -1,72 +1,126 @@
-import { Producto } from './producto.interface';
-import { Usuario } from './usuario.interface';
-
-export type EstadoOrden = 'pendiente' | 'en_produccion' | 'completada' | 'cancelada';
+export type EstadoProduccion =
+  | 'pendiente'
+  | 'en_produccion'
+  | 'completada'
+  | 'cancelada';
 
 export interface OrdenProduccion {
+
   id: number;
+
   producto_id: number;
-  producto?: Producto;
+
   cantidad_solicitada: number;
+
   fecha_requerida: string;
-  fecha_creacion?: string;
-  estado: EstadoOrden;
-  usuario_creador_id?: number;
-  usuario_creador?: Usuario;
+
+  fecha_creacion: string;
+
+  estado: EstadoProduccion;
+
+  usuario_creador_id: number;
+
   observaciones?: string;
-  notificado_bodega?: boolean;
+
+  notificado_bodega: boolean;
+
   fecha_cancelacion?: string;
+
+  producto?: any;
 }
 
-export interface RegistroProduccion {
-  id: number;
-  orden_produccion_id: number;
-  fecha_inicio?: string;
-  fecha_fin?: string;
-  cantidad_real_producida: number;
-  incidencias?: string;
-  responsable_id?: number;
-  responsable?: Usuario;
-  created_at?: string;
-}
+// Alias para no romper imports viejos
+export type EstadoOrden =
+  EstadoProduccion;
 
-export interface EntregaProducto {
-  id: number;
-  orden_produccion_id: number;
-  fecha_hora_entrega?: string;
-  cantidad_entregada: number;
-  responsable_id?: number;
-  responsable?: Usuario;
-  observaciones?: string;
-}
-
-export interface TrazabilidadProceso {
-  id: number;
-  orden_produccion_id: number;
-  etapa: string;
-  responsable_id?: number;
-  responsable?: Usuario;
-  accion_realizada: string;
-  observaciones?: string;
-  fecha_hora?: string;
-}
+// Requests
 
 export interface CreateOrdenRequest {
+
   producto_id: number;
+
   cantidad_solicitada: number;
+
   fecha_requerida: string;
+
   observaciones?: string;
 }
 
 export interface UpdateOrdenEstadoRequest {
-  estado: EstadoOrden;
+
+  estado: EstadoProduccion;
+
   observaciones?: string;
 }
 
-export interface CreateRegistroProduccionRequest {
+// Producción
+
+export interface RegistroProduccion {
+
+  id: number;
+
   orden_produccion_id: number;
+
   fecha_inicio?: string;
+
   fecha_fin?: string;
+
   cantidad_real_producida: number;
+
   incidencias?: string;
+
+  responsable_id: number;
+
+  created_at?: string;
+}
+
+export interface CreateRegistroProduccionRequest {
+
+  orden_produccion_id: number;
+
+  fecha_inicio?: string;
+
+  fecha_fin?: string;
+
+  cantidad_real_producida: number;
+
+  incidencias?: string;
+
+  responsable_id: number;
+}
+
+// Entregas
+
+export interface EntregaProducto {
+
+  id: number;
+
+  orden_produccion_id: number;
+
+  fecha_hora_entrega?: string;
+
+  cantidad_entregada: number;
+
+  responsable_id: number;
+
+  observaciones?: string;
+}
+
+// Trazabilidad
+
+export interface TrazabilidadProceso {
+
+  id: number;
+
+  orden_produccion_id: number;
+
+  etapa: string;
+
+  responsable_id: number;
+
+  accion_realizada: string;
+
+  observaciones?: string;
+
+  fecha_hora?: string;
 }
