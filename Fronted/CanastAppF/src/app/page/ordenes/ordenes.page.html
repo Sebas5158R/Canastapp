@@ -1,15 +1,24 @@
 <ion-header>
+  
   <ion-toolbar color="primary">
+    
     <ion-title>Órdenes de Producción</ion-title>
+    
     <ion-buttons slot="end">
+      <ion-button (click)="abrirModalNuevaOrden()">  <!-- ← AGREGAR -->
+        <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+      </ion-button>
       <ion-button (click)="verHistorial()">
         <ion-icon name="time-outline" slot="icon-only"></ion-icon>
       </ion-button>
+      
     </ion-buttons>
   </ion-toolbar>
+  
 
   <ion-toolbar>
     <ion-segment [value]="filtroEstado()" (ionChange)="filtrarPorEstado($event)">
+  
       <ion-segment-button value="">
         <ion-label>Todas</ion-label>
       </ion-segment-button>

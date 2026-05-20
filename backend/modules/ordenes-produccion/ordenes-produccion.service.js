@@ -203,7 +203,9 @@ export const getOrdenById = async (id) => {
 };
 
 // ── CREATE ───────────────────────────────────────────────
+// ── CREATE (CON VALIDACIÓN DE STOCK Y DESCUENTO) ─────────
 export const createOrden = async (data, usuarioId) => {
+  // Validaciones básicas
   if (!data.producto_id) throw createHttpError(400, "producto_id es requerido");
 
   const cantidad = parseInt(data.cantidad_solicitada, 10);
@@ -216,35 +218,125 @@ export const createOrden = async (data, usuarioId) => {
   if (isNaN(fechaRequerida.getTime()))
     throw createHttpError(400, "fecha_requerida inválida");
 
-  const productoId   = parseBigIntId(data.producto_id, "producto_id");
-  const creadorId    = parseBigIntId(usuarioId, "usuario_id");
+  const productoId = parseBigIntId(data.producto_id, "producto_id");
+  const creadorId = parseBigIntId(usuarioId, "usuario_id");
 
-  const producto = await prisma.productos.findUnique({ where: { id: productoId } });
-  if (!producto) throw createHttpError(404, "Producto no encontrado");
-
-  const orden = await prisma.ordenes_produccion.create({
-    data: {
-      producto_id:         productoId,
-      cantidad_solicitada: cantidad,
-      fecha_requerida:     fechaRequerida,
-      usuario_creador_id:  creadorId,
-      observaciones:       data.observaciones?.trim() || null,
-      estado:              "pendiente",
-    },
-    include: includeProducto,
+  // Obtener producto con su receta y materias primas
+  const producto = await prisma.productos.findUnique({
+    where: { id: productoId },
+    include: {
+      recetas: {
+        include: {
+          materia_prima: true
+        }
+      }
+    }
   });
 
-  // Transformar respuesta
+  if (!producto) throw createHttpError(404, "Producto no encontrado");
+  
+  if (producto.recetas.length === 0) {
+    throw createHttpError(400, "El producto no tiene una receta definida");
+  }
+
+  // Validar stock y preparar movimientos
+  const faltantes = [];
+  const movimientos = [];
+
+  for (const receta of producto.recetas) {
+    const requerido = Number(receta.cantidad_necesaria) * cantidad;
+    const disponible = Number(receta.materia_prima.cantidad_disponible);
+
+    if (disponible < requerido) {
+      faltantes.push({
+        nombre: receta.materia_prima.nombre,
+        disponible: disponible,
+        requerido: requerido,
+        faltante: requerido - disponible,
+        unidad_medida: receta.unidad_medida
+      });
+    }
+
+    movimientos.push({
+      materia_prima_id: receta.ingrediente_id,
+      cantidad: requerido,
+      tipo_movimiento: 'salida',
+      observaciones: `Consumo para orden de producción - Producto: ${producto.nombre}, Cantidad: ${cantidad}`
+    });
+  }
+
+  // Si falta stock, error detallado
+  if (faltantes.length > 0) {
+    const error = new Error('Stock insuficiente');
+    error.statusCode = 400;
+    error.faltantes = faltantes;
+    throw error;
+  }
+
+  // Transacción: crear orden y descontar inventario
+  const result = await prisma.$transaction(async (tx) => {
+    // 1. Crear la orden
+    const orden = await tx.ordenes_produccion.create({
+      data: {
+        producto_id: productoId,
+        cantidad_solicitada: cantidad,
+        fecha_requerida: fechaRequerida,
+        usuario_creador_id: creadorId,
+        observaciones: data.observaciones?.trim() || null,
+        estado: "pendiente",
+      },
+      include: includeProducto,
+    });
+
+    // 2. Descontar stock y crear movimientos de inventario
+    for (const movimiento of movimientos) {
+      await tx.materia_prima.update({
+        where: { id: movimiento.materia_prima_id },
+        data: {
+          cantidad_disponible: {
+            decrement: movimiento.cantidad
+          }
+        }
+      });
+
+      await tx.movimientos_inventario.create({
+        data: {
+          materia_prima_id: movimiento.materia_prima_id,
+          tipo_movimiento: 'salida',
+          cantidad: movimiento.cantidad,
+          usuario_id: creadorId,
+          orden_produccion_id: orden.id,
+          observaciones: movimiento.observaciones
+        }
+      });
+    }
+
+    // 3. Registrar trazabilidad
+    await tx.trazabilidad_proceso.create({
+      data: {
+        orden_produccion_id: orden.id,
+        etapa: 'creacion',
+        responsable_id: creadorId,
+        accion_realizada: `Orden creada - Producto: ${producto.nombre}, Cantidad: ${cantidad}`,
+        observaciones: `Se descontaron ${movimientos.length} materias primas del inventario`
+      }
+    });
+
+    return orden;
+  });
+
+  // Transformar respuesta para el frontend
   return {
-    id: Number(orden.id),
-    producto_id: Number(orden.producto_id),
-    producto_nombre: orden.productos?.nombre,
-    cantidad_planeada: orden.cantidad_solicitada,
-    estado: orden.estado,
-    fecha_fin_estimada: orden.fecha_requerida,
-    observaciones: orden.observaciones,
-    created_at: orden.fecha_creacion,
-    created_by: Number(orden.usuario_creador_id)
+    id: Number(result.id),
+    producto_id: Number(result.producto_id),
+    producto_nombre: result.productos?.nombre,
+    cantidad_planeada: result.cantidad_solicitada,
+    estado: result.estado,
+    fecha_fin_estimada: result.fecha_requerida,
+    observaciones: result.observaciones,
+    created_at: result.fecha_creacion,
+    created_by: Number(result.usuario_creador_id),
+    creador_nombre: result.usuarios?.nombre_completo
   };
 };
 

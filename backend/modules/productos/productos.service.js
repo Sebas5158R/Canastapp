@@ -74,6 +74,79 @@ const aggregateRecipe = (receta = []) => {
 
     return Array.from(aggregated.values());
 };
+// ─────────────────────────────────────────────────────────────
+// NUEVOS MÉTODOS PARA ÓRDENES DE PRODUCCIÓN
+// ─────────────────────────────────────────────────────────────
+
+export const getRecetaByProducto = async (id) => {
+  const productoId = parseBigIntId(id, "producto_id");
+  
+  const producto = await getProductoWithReceta(prisma, productoId);
+  
+  if (!producto) {
+    throw createHttpError(404, "Producto no encontrado");
+  }
+  
+  // Transformar la respuesta para el frontend
+  return {
+    producto_id: Number(producto.id),
+    producto_nombre: producto.nombre,
+    ingredientes: producto.recetas.map(receta => ({
+      materia_prima_id: Number(receta.ingrediente_id),
+      nombre: receta.materia_prima.nombre,
+      cantidad_necesaria: Number(receta.cantidad_necesaria),
+      unidad_medida: receta.unidad_medida,
+      stock_disponible: Number(receta.materia_prima.cantidad_disponible)
+    }))
+  };
+};
+
+export const validarStockProducto = async (id, cantidad_solicitada) => {
+  const productoId = parseBigIntId(id, "producto_id");
+  const cantidad = parseInt(cantidad_solicitada, 10);
+  
+  if (!cantidad || cantidad <= 0) {
+    throw createHttpError(400, "cantidad_solicitada debe ser un entero positivo");
+  }
+  
+  const producto = await getProductoWithReceta(prisma, productoId);
+  
+  if (!producto) {
+    throw createHttpError(404, "Producto no encontrado");
+  }
+  
+  if (producto.recetas.length === 0) {
+    throw createHttpError(400, "El producto no tiene una receta definida");
+  }
+  
+  const faltantes = [];
+  let stockValido = true;
+  
+  for (const receta of producto.recetas) {
+    const requerido = Number(receta.cantidad_necesaria) * cantidad;
+    const disponible = Number(receta.materia_prima.cantidad_disponible);
+    
+    if (disponible < requerido) {
+      stockValido = false;
+      faltantes.push({
+        materia_prima_id: Number(receta.ingrediente_id),
+        nombre: receta.materia_prima.nombre,
+        disponible: disponible,
+        requerido: requerido,
+        faltante: requerido - disponible,
+        unidad_medida: receta.unidad_medida
+      });
+    }
+  }
+  
+  return {
+    valida: stockValido,
+    faltantes: faltantes,
+    mensaje: stockValido 
+      ? 'Stock suficiente para producir la cantidad solicitada' 
+      : 'Stock insuficiente para algunas materias primas'
+  };
+};
 
 const updateMateriaPrimaEstado = async (client, materiaPrimaId) => {
     const materiaPrima = await client.materia_prima.findUnique({

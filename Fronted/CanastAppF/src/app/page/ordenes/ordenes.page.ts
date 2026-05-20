@@ -5,6 +5,7 @@ import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { OrdenState } from 'src/app/data/state/orden.state';
 import { Orden } from 'src/app/data/interfaces/orden.interface';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CrearOrdenModalComponent } from './modals/crear-orden-modal/crear-orden-modal.component';
 
 @Component({
   selector: 'app-ordenes',
@@ -17,6 +18,7 @@ export class OrdenesPage implements OnInit {
   private ordenState = inject(OrdenState);
   private destroyRef = inject(DestroyRef);
   private alertController = inject(AlertController);
+  private modalController = inject(ModalController); // ← AGREGAR
 
   // Signals del state
   ordenes = this.ordenState.ordenes;
@@ -30,7 +32,20 @@ export class OrdenesPage implements OnInit {
   estadosDisponibles = ['pendiente', 'en_produccion', 'completada', 'cancelada'];
   selectedOrden: Orden | null = null;
   showModal = false;
+   async abrirModalNuevaOrden() {
+    const modal = await this.modalController.create({
+      component: CrearOrdenModalComponent,
+      componentProps: {}
+    });
 
+    modal.onDidDismiss().then((result) => {
+      if (result.data?.success) {
+        this.cargarOrdenes(); // Recargar la lista
+      }
+    });
+
+    await modal.present();
+  }
   constructor() {}
 
   ngOnInit() {

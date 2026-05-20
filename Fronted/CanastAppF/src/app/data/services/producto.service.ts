@@ -11,6 +11,8 @@ import {
 } from '../interfaces/producto.interface';
 import { ProductosState } from '../state/producto.state';
 
+import { RecetaProducto, ValidacionStockResponse } from '../interfaces/orden.interface';
+
 @Injectable({ providedIn: 'root' })
 export class ProductoService {
 
@@ -28,6 +30,16 @@ export class ProductoService {
 
   getProductoPorId(id: number): Observable<Producto> {
     return this.api.get<Producto>(`${this.path}/${id}`);
+  }
+   // ── Nuevos métodos para órdenes de producción ──
+  getRecetaByProducto(id: number): Observable<RecetaProducto> {
+    return this.api.get<RecetaProducto>(`${this.path}/${id}/receta`);
+  }
+
+  validarStock(id: number, cantidad_solicitada: number): Observable<ValidacionStockResponse> {
+    return this.api.post<ValidacionStockResponse>(`${this.path}/${id}/validar-stock`, {
+      cantidad_solicitada
+    });
   }
 
   crearProducto(data: CreateProductoRequest): Observable<Producto> {

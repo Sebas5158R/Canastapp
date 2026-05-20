@@ -1,0 +1,121 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Nueva Orden de Producción</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()">
+        <ion-icon name="close-outline" ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Producto -->
+  <ion-item>
+    <ion-label position="stacked">Producto *</ion-label>
+    <ion-select 
+      [value]="productoSeleccionado()?.id" 
+      (ionChange)="onProductoChange($event)"
+      placeholder="Seleccione un producto"
+      interface="alert"
+      [disabled]="cargandoProductos()"
+    >
+      <ion-select-option *ngFor="let producto of productos()" [value]="producto.id">
+        {{ producto.nombre }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Cantidad -->
+  <ion-item>
+    <ion-label position="stacked">Cantidad a producir *</ion-label>
+    <ion-input 
+      type="number" 
+      [(ngModel)]="cantidadSolicitada"
+      (ionChange)="onCantidadChange()"
+      placeholder="Ingrese la cantidad"
+    ></ion-input>
+  </ion-item>
+
+  <!-- Fecha requerida -->
+  <ion-item>
+    <ion-label position="stacked">Fecha requerida *</ion-label>
+    <ion-datetime 
+      [(ngModel)]="fechaRequerida"
+      presentation="date"
+      [min]="today"
+    ></ion-datetime>
+  </ion-item>
+
+  <!-- Observaciones -->
+  <ion-item>
+    <ion-label position="stacked">Observaciones</ion-label>
+    <ion-textarea 
+      [(ngModel)]="observaciones"
+      placeholder="Observaciones adicionales"
+      rows="2"
+    ></ion-textarea>
+  </ion-item>
+
+  <!-- Tabla de materias primas -->
+  @if (cargandoReceta()) {
+    <div class="loading-receta">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando receta...</p>
+    </div>
+  }
+
+  @if (receta() && !cargandoReceta()) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Materias Primas Requeridas</ion-card-title>
+        <ion-card-subtitle>
+          Cantidad: {{ cantidadSolicitada() }} unidades
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-grid class="tabla-materias">
+          <ion-row class="header-row">
+            <ion-col size="4">Materia Prima</ion-col>
+            <ion-col size="3">Requerido</ion-col>
+            <ion-col size="3">Disponible</ion-col>
+            <ion-col size="2">Estado</ion-col>
+          </ion-row>
+
+          @for (ingrediente of receta()!.ingredientes; track ingrediente.materia_prima_id) {
+            <ion-row [class.falta-stock]="ingrediente.stock_disponible < (ingrediente.cantidad_necesaria * cantidadSolicitada())">
+              <ion-col size="4">{{ ingrediente.nombre }}</ion-col>
+              <ion-col size="3">
+                {{ (ingrediente.cantidad_necesaria * cantidadSolicitada()) | number:'1.2-2' }} {{ ingrediente.unidad_medida }}
+              </ion-col>
+              <ion-col size="3">
+                {{ ingrediente.stock_disponible | number:'1.2-2' }} {{ ingrediente.unidad_medida }}
+              </ion-col>
+              <ion-col size="2">
+                <ion-badge [color]="ingrediente.stock_disponible >= (ingrediente.cantidad_necesaria * cantidadSolicitada()) ? 'success' : 'danger'">
+                  {{ ingrediente.stock_disponible >= (ingrediente.cantidad_necesaria * cantidadSolicitada()) ? 'Suficiente' : 'Insuficiente' }}
+                </ion-badge>
+              </ion-col>
+            </ion-row>
+          }
+        </ion-grid>
+
+        @if (!stockValido()) {
+          <ion-text color="danger" class="error-message">
+            <p>⚠️ No hay suficiente stock de materias primas</p>
+          </ion-text>
+        }
+      </ion-card-content>
+    </ion-card>
+  }
+
+  <!-- Botón crear -->
+  <ion-button 
+    expand="block" 
+    (click)="crearOrden()"
+    [disabled]="!productoSeleccionado() || cantidadSolicitada() <= 0 || !stockValido() || cargandoReceta()"
+  >
+    Crear Orden
+  </ion-button>
+</ion-content>

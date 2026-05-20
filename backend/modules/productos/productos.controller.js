@@ -35,7 +35,24 @@ export const updateProducto = async (req, res, next) => {
         next(error);
     }
 };
+export const getRecetaByProducto = async (req, res, next) => {
+  try {
+    const data = await service.getRecetaByProducto(req.params.id);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+};
 
+export const validarStockProducto = async (req, res, next) => {
+  try {
+    const { cantidad_solicitada } = req.body;
+    const data = await service.validarStockProducto(req.params.id, cantidad_solicitada);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+};
 export const replaceRecetaProducto = async (req, res, next) => {
     try {
         const data = await service.replaceRecetaProducto(req.params.id, req.body);

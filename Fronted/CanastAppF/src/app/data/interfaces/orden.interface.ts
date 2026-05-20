@@ -47,3 +47,57 @@ export interface UpdateEstadoDTO {
   estado: Orden['estado'];
   observaciones?: string;
 }
+export interface Producto {
+  id: number;
+  nombre: string;
+  descripcion?: string;
+  unidad_medida: string;
+  costo_estimado?: number;
+}
+
+export interface MateriaPrimaReceta {
+  materia_prima_id: number;
+  nombre: string;
+  cantidad_necesaria: number;  // por unidad de producto
+  unidad_medida: string;
+  stock_disponible: number;
+  stock_requerido: number;      // cantidad_solicitada * cantidad_necesaria
+  stock_suficiente: boolean;
+}
+
+export interface RecetaProducto {
+  producto_id: number;
+  producto_nombre: string;
+  ingredientes: MateriaPrimaReceta[];
+}
+
+export interface CreateOrdenRequest {
+  producto_id: number;
+  cantidad_solicitada: number;
+  fecha_requerida: Date | string;
+  observaciones?: string;
+}
+
+export interface CreateOrdenResponse {
+  id: number;
+  producto_id: number;
+  producto_nombre: string;
+  cantidad_solicitada: number;
+  estado: string;
+  fecha_requerida: string;
+  observaciones?: string;
+  created_at: string;
+}
+
+export interface ValidacionStockResponse {
+  valida: boolean;
+  faltantes?: {
+    materia_prima_id: number;
+    nombre: string;
+    disponible: number;
+    requerido: number;
+    faltante: number;
+    unidad_medida: string;
+  }[];
+  mensaje?: string;
+}
