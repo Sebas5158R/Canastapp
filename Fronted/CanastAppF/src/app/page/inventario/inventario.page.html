@@ -1,128 +1,137 @@
-<ion-header>
-
+<ion-header class="page-header">
   <ion-toolbar>
 
-    <ion-title>
-      Inventario
-    </ion-title>
+    <!-- Título -->
+    <ion-title class="page-title">Inventario</ion-title>
+
+    <!-- Botón agregar -->
+    <ion-buttons slot="end">
+      <button class="add-btn" (click)="crearMateria()" title="Nueva materia prima">
+        <ion-icon name="add-outline"></ion-icon>
+      </button>
+    </ion-buttons>
 
   </ion-toolbar>
-
 </ion-header>
 
-<ion-content>
+<ion-content class="page-content">
 
-  <!-- REFRESH -->
-
-  <ion-refresher
-    slot="fixed"
-    (ionRefresh)="refrescar($event)">
-
-    <ion-refresher-content>
-    </ion-refresher-content>
-
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refrescar($event)">
+    <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <!-- SEARCH -->
+  <div class="content-wrapper">
 
-  <ion-searchbar
-    [(ngModel)]="busqueda"
-    placeholder="Buscar materia prima">
-  </ion-searchbar>
-  <div class="ion-padding">
+    <!-- Buscador -->
+    <div class="search-bar">
+      <ion-icon name="search-outline" class="search-icon"></ion-icon>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Buscar materia prima..."
+        [(ngModel)]="busqueda"
+      />
+      <button *ngIf="busqueda" class="search-clear" (click)="busqueda = ''">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
 
-  <ion-button
-    expand="block"
-    (click)="crearMateria()">
+    <!-- Estado de carga -->
+    <div class="loading-state" *ngIf="cargando">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
 
-    Nueva Materia Prima
+    <!-- Error de carga -->
+    <div class="error-state" *ngIf="errorCarga && !cargando">
+      <ion-icon name="cloud-offline-outline" class="error-icon"></ion-icon>
+      <p class="error-text">No se pudo cargar el inventario</p>
+      <button class="btn-retry" (click)="cargarInventario()">Reintentar</button>
+    </div>
 
-  </ion-button>
+    <!-- Tabla de materias primas -->
+    <ng-container *ngIf="!cargando && !errorCarga">
+      <ng-container *ngIf="inventario$ | async as lista">
 
-</div>
-  <!-- LISTA -->
+        <!-- Cabecera de tabla -->
+        <div class="table-wrap" *ngIf="filtrarInventario(lista).length > 0; else emptyState">
+          <div class="table-head">
+            <span>Materia Prima</span>
+            <span>Stock</span>
+            <span>Estado</span>
+          </div>
 
-  <ion-list>
+          <!-- Filas -->
+          <div
+            class="table-row"
+            [class.critico]="estadoStock(m) === 'critico'"
+            *ngFor="let m of filtrarInventario(lista)"
+          >
+            <!-- Columna nombre + meta -->
+            <div class="col-name">
+              <p class="mat-name">{{ m.nombre }}</p>
+              <p class="mat-meta" *ngIf="m.descripcion">{{ m.descripcion }}</p>
+              <p class="mat-vence" *ngIf="m.fecha_vencimiento">
+                <ion-icon name="time-outline"></ion-icon>
+                Vence: {{ m.fecha_vencimiento | date:'dd/MM/yyyy' }}
+              </p>
+            </div>
 
-    <ion-item
-      *ngFor="
-        let materia of inventario$ | async
-      ">
-      <ion-buttons slot="end">
-        <ion-button
-  color="primary"
-  (click)="abrirMovimientos(materia)">
+            <!-- Columna stock -->
+            <div class="col-qty">
+              <span class="qty-value">{{ m.cantidad_disponible }}</span>
+              <span class="qty-unit">{{ m.unidad_medida }}</span>
+              <span class="qty-range">
+                {{ m.stock_minimo }} – {{ m.stock_maximo }}
+              </span>
+            </div>
 
-  <ion-icon
-    name="swap-horizontal-outline">
-  </ion-icon>
+            <!-- Columna estado + acciones -->
+            <div class="col-actions">
+              <span class="status-chip" [ngClass]="estadoStock(m)">
+                <ion-icon
+                  [name]="estadoStock(m) === 'critico' ? 'warning-outline'
+                        : estadoStock(m) === 'exceso'  ? 'trending-up-outline'
+                        : 'checkmark-circle-outline'">
+                </ion-icon>
+                {{ labelEstado(m) }}
+              </span>
 
-</ion-button>
+              <div class="row-btns">
+                <!-- Movimientos -->
+                <button class="row-btn btn-move" (click)="abrirMovimientos(m)" title="Movimientos">
+                  <ion-icon name="swap-horizontal-outline"></ion-icon>
+                </button>
+                <!-- Editar -->
+                <button class="row-btn btn-edit" (click)="editarMateria(m)" title="Editar">
+                  <ion-icon name="create-outline"></ion-icon>
+                </button>
+                <!-- Eliminar -->
+                <button class="row-btn btn-del" (click)="eliminarMateria(m)" title="Eliminar">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
 
-  <ion-button
-    color="warning"
-    (click)="editarMateria(materia)">
+          </div><!-- /table-row -->
+        </div><!-- /table-wrap -->
 
-    <ion-icon
-      name="create-outline">
-    </ion-icon>
+        <!-- Empty state -->
+        <ng-template #emptyState>
+          <div class="empty-state">
+            <ion-icon name="cube-outline" class="empty-icon"></ion-icon>
+            <p class="empty-text">
+              {{ busqueda ? 'Sin resultados para "' + busqueda + '"' : 'No hay materias primas registradas' }}
+            </p>
+            <button class="btn-save" (click)="crearMateria()" *ngIf="!busqueda">
+              Agregar primera materia prima
+            </button>
+          </div>
+        </ng-template>
 
-  </ion-button>
+      </ng-container>
+    </ng-container>
 
-  <ion-button
-    color="danger"
-    (click)="eliminarMateria(materia)">
-
-    <ion-icon
-      name="trash-outline">
-    </ion-icon>
-
-  </ion-button>
-
-</ion-buttons>
-
-      <ion-label>
-
-        <h2>
-          {{ materia.nombre }}
-        </h2>
-
-        <p>
-          Stock:
-          {{ materia.cantidad_disponible }}
-          {{ materia.unidad_medida }}
-        </p>
-
-        <p>
-
-          Mínimo:
-          {{ materia.stock_minimo }}
-
-          |
-          
-          Máximo:
-          {{ materia.stock_maximo }}
-        </p>
-
-      </ion-label>
-
-      <!-- ALERTA -->
-
-      <ion-badge
-        color="danger"
-
-        *ngIf="
-          materia.cantidad_disponible
-          <=
-          materia.stock_minimo
-        ">
-
-        STOCK BAJO
-
-      </ion-badge>
-
-    </ion-item>
-
-  </ion-list>
+  </div><!-- /content-wrapper -->
 
 </ion-content>

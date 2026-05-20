@@ -1,100 +1,59 @@
-import {
-  Injectable,
-} from '@angular/core';
-
-import {
-  io,
-  Socket,
-} from 'socket.io-client';
-
-import {
-  BehaviorSubject,
-} from 'rxjs';
-
-import {
-  environment,
-} from 'src/environments/environment';
+import { Injectable } from '@angular/core';
+import { io, Socket } from 'socket.io-client';
+import { BehaviorSubject } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SocketService {
 
-  private socket!: Socket;
+  private socket: Socket | null = null;
 
-  connected$ =
-    new BehaviorSubject<boolean>(
-      false
-    );
+  connected$ = new BehaviorSubject<boolean>(false);
 
+  // ── Conexión lazy: se llama solo cuando hay sesión activa ──────────
   connect(): void {
+    if (this.socket?.connected) return;
 
     this.socket = io(
-      environment.apiUrl.replace(
-        '/api',
-        ''
-      ),
-      {
-        transports: ['websocket'],
-      }
+      environment.apiUrl.replace('/api', ''),
+      { transports: ['websocket'] }
     );
 
-    this.socket.on(
-      'connect',
-      () => {
+    this.socket.on('connect', () => {
+      console.log('SOCKET CONNECTED');
+      this.connected$.next(true);
+    });
 
-        console.log(
-          'SOCKET CONNECTED'
-        );
+    this.socket.on('disconnect', () => {
+      console.log('SOCKET DISCONNECTED');
+      this.connected$.next(false);
+    });
 
-        this.connected$.next(
-          true
-        );
-      }
-    );
-
-    this.socket.on(
-      'disconnect',
-      () => {
-
-        console.log(
-          'SOCKET DISCONNECTED'
-        );
-
-        this.connected$.next(
-          false
-        );
-      }
-    );
+    this.socket.on('connect_error', (err) => {
+      console.warn('SOCKET ERROR:', err.message);
+    });
   }
 
-  listen(
-    event: string,
-    callback: (data: any) => void
-  ): void {
-
-    this.socket.on(
-      event,
-      callback
-    );
+  // ── Escuchar un evento; no-op si el socket no está listo ──────────
+  listen(event: string, callback: (data: any) => void): void {
+    if (!this.socket) return;
+    this.socket.on(event, callback);
   }
 
-  emit(
-    event: string,
-    data: any
-  ): void {
-
-    this.socket.emit(
-      event,
-      data
-    );
+  // ── Emitir un evento; no-op si el socket no está listo ───────────
+  emit(event: string, data: any): void {
+    if (!this.socket) return;
+    this.socket.emit(event, data);
   }
 
+  // ── Desconectar limpiamente ───────────────────────────────────────
   disconnect(): void {
-
     if (this.socket) {
-
       this.socket.disconnect();
+      this.socket = null;
+      this.connected$.next(false);
     }
   }
 }
