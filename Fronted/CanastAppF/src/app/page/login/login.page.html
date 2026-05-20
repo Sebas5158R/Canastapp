@@ -1,42 +1,51 @@
-<ion-content class="ion-padding">
+<ion-content class="login-content">
 
-  <ion-card>
+  <div class="contenedor-fondo">
+    <img
+      src="../../../assets/img/Babka.png"
+      alt="Fondo"
+      class="imagen-fondo">
+  </div>
 
-    <ion-card-content>
+  <div class="contenedor">
 
-      <ion-item>
-        <ion-label position="stacked">
-          Correo
-        </ion-label>
+    <ion-card class="login-card">
 
-        <ion-input
-          [(ngModel)]="email"
-          type="email">
-        </ion-input>
-      </ion-item>
+      <ion-card-content>
 
-      <ion-item>
-        <ion-label position="stacked">
-          Contraseña
-        </ion-label>
+        <div class="titulo">
+          <h1>Canastapp Login</h1>
+        </div>
 
-        <ion-input
-          [(ngModel)]="password"
-          type="password">
-        </ion-input>
-      </ion-item>
+        <ion-item lines="none">
+          <ion-input
+            [(ngModel)]="email"
+            type="email"
+            placeholder="Correo">
+          </ion-input>
+        </ion-item>
 
-      <ion-button
-        expand="block"
-        (click)="login()"
-        [disabled]="loading">
+        <ion-item lines="none">
+          <ion-input
+            [(ngModel)]="password"
+            type="password"
+            placeholder="Contraseña">
+          </ion-input>
+        </ion-item>
 
-        Ingresar
+        <ion-button
+          expand="block"
+          (click)="login()"
+          [disabled]="loading">
 
-      </ion-button>
+          Ingresar
 
-    </ion-card-content>
+        </ion-button>
 
-  </ion-card>
+      </ion-card-content>
+
+    </ion-card>
+
+  </div>
 
 </ion-content>
