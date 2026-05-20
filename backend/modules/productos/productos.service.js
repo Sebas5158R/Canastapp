@@ -108,32 +108,18 @@ const buildProductoData = (data) => {
     return payload;
 };
 
-const validateRecipeStock = async (tx, receta) => {
+const validateRecipeIngredients = async (tx, receta) => {
     const ingredientIds = receta.map((item) => item.ingrediente_id);
 
     const materiasPrimas = await tx.materia_prima.findMany({
-        where: {
-            id: { in: ingredientIds },
-        },
+        where: { id: { in: ingredientIds } },
+        select: { id: true, nombre: true },
     });
 
-    const materiasMap = new Map(materiasPrimas.map((materia) => [materia.id.toString(), materia]));
-
-    if (materiasMap.size !== ingredientIds.length) {
-        const missingId = ingredientIds.find((id) => !materiasMap.has(id.toString()));
+    if (materiasPrimas.length !== ingredientIds.length) {
+        const foundIds = new Set(materiasPrimas.map((m) => m.id.toString()));
+        const missingId = ingredientIds.find((id) => !foundIds.has(id.toString()));
         throw createHttpError(404, `Materia prima no encontrada: ${missingId.toString()}`);
-    }
-
-    for (const item of receta) {
-        const materiaPrima = materiasMap.get(item.ingrediente_id.toString());
-        const stockDisponible = Number(materiaPrima.cantidad_disponible);
-
-        if (stockDisponible < item.cantidad_necesaria) {
-            throw createHttpError(
-                400,
-                `Stock insuficiente para ${materiaPrima.nombre}: disponible ${stockDisponible}, requerido ${item.cantidad_necesaria}`
-            );
-        }
     }
 };
 
@@ -192,13 +178,8 @@ export const createProducto = async (data) => {
         throw createHttpError(400, "nombre es requerido");
     }
 
-    const usuarioId = data.usuario_id !== undefined && data.usuario_id !== null && data.usuario_id !== ""
-        ? parseBigIntId(data.usuario_id, "usuario_id")
-        : null;
-    const observaciones = data.observaciones !== undefined ? String(data.observaciones).trim() : null;
-
     return prisma.$transaction(async (tx) => {
-        await validateRecipeStock(tx, receta);
+        await validateRecipeIngredients(tx, receta);
 
         const producto = await tx.productos.create({
             data: {
@@ -216,40 +197,6 @@ export const createProducto = async (data) => {
                 unidad_medida: item.unidad_medida,
             })),
         });
-
-        for (const item of receta) {
-            const affectedRows = await tx.materia_prima.updateMany({
-                where: {
-                    id: item.ingrediente_id,
-                    cantidad_disponible: {
-                        gte: item.cantidad_necesaria,
-                    },
-                },
-                data: {
-                    cantidad_disponible: {
-                        decrement: item.cantidad_necesaria,
-                    },
-                    updated_at: new Date(),
-                },
-            });
-
-            if (affectedRows.count === 0) {
-                throw createHttpError(400, `Stock insuficiente para ingrediente ${item.ingrediente_id.toString()}`);
-            }
-
-            await updateMateriaPrimaEstado(tx, item.ingrediente_id);
-
-            await tx.movimientos_inventario.create({
-                data: {
-                    materia_prima_id: item.ingrediente_id,
-                    tipo_movimiento: "salida",
-                    cantidad: item.cantidad_necesaria,
-                    usuario_id: usuarioId,
-                    orden_produccion_id: null,
-                    observaciones: observaciones || `Consumo automático por creación de producto ${producto.nombre}`,
-                },
-            });
-        }
 
         return getProductoWithReceta(tx, producto.id);
     });
@@ -301,7 +248,7 @@ export const replaceRecetaProducto = async (id, data) => {
     const receta = aggregateRecipe(data.receta);
 
     return prisma.$transaction(async (tx) => {
-        await validateRecipeStock(tx, receta);
+        await validateRecipeIngredients(tx, receta);
 
         await tx.recetas.deleteMany({
             where: { producto_id: productoId },
