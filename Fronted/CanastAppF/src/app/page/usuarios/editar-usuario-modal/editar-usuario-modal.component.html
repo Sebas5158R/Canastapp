@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+
+    <ion-title>
+      Editar usuario
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()">
+        Cerrar
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-item>
+    <ion-label position="stacked">
+      Nombre
+    </ion-label>
+
+    <ion-input [(ngModel)]="form.nombre_completo"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">
+      Correo
+    </ion-label>
+
+    <ion-input [(ngModel)]="form.correo"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">
+      Identificación
+    </ion-label>
+
+    <ion-input [(ngModel)]="form.numero_identificacion"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Cambiar de Rol</ion-label>
+
+    <ion-select [(ngModel)]="form.rol_id" placeholder="Selecciona un rol" interface="popover">
+      <ion-select-option *ngFor="let rol of roles" [value]="rol.id">
+        {{ rol.nombre }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-button expand="block" class="ion-margin-top" (click)="guardar()">
+    Guardar cambios
+  </ion-button>
+
+</ion-content>

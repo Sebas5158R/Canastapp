@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/usuarios"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>
+      Usuarios
+    </ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="table-wrapper">
+
+    <div *ngIf="cargando" class="loading">
+      <ion-spinner></ion-spinner>
+    </div>
+
+    <table *ngIf="!cargando">
+
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let usuario of usuarios">
+
+          <td>{{ usuario.nombre_completo }}</td>
+
+          <td>{{ usuario.correo }}</td>
+
+          <td>{{ usuario.rol?.nombre }}</td>
+
+          <td>
+            <ion-badge [color]="usuario.activo ? 'success' : 'medium'">
+              {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+            </ion-badge>
+          </td>
+
+          <td class="actions">
+
+            <ion-button fill="clear" color="primary" size="small" (click)="editarUsuario(usuario)">
+              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+              Editar
+            </ion-button>
+
+            <ion-button fill="clear" color="danger" size="small" (click)="confirmarEliminar(usuario)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              Eliminar
+            </ion-button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</ion-content>

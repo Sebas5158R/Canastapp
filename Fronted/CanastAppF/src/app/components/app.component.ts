@@ -18,6 +18,7 @@ import { IonicModule } from '@ionic/angular';
 import { filter } from 'rxjs';
 
 import { AuthService } from 'src/app/data/services/auth.service';
+import { PermissionService } from 'src/app/data/services/permission.service';
 
 @Component({
   selector: 'app-root',
@@ -36,9 +37,11 @@ export class AppComponent implements OnInit {
 
   private router      = inject(Router);
   private authService = inject(AuthService);
+  private permissionService = inject(PermissionService);
 
   // ── Estado de sesión ──────────────────────────────────
   sesionActiva = false;
+  isAdmin = false;
 
   userName   = '';
   userRole   = '';
@@ -47,6 +50,7 @@ export class AppComponent implements OnInit {
   // ── Ítems del menú ────────────────────────────────────
   menuItems = [
     { title: 'Dashboard',  url: '/dashboard',  icon: 'grid'      },
+    { title: 'Usuarios',   url: '/usuarios',   icon: 'people', adminOnly: true },
     { title: 'Producción', url: '/produccion', icon: 'construct' },
     { title: 'Inventario', url: '/inventario', icon: 'cube'      },
     { title: 'Productos',  url: '/productos',  icon: 'basket'    },
@@ -69,11 +73,13 @@ export class AppComponent implements OnInit {
 
     if (this.sesionActiva) {
       const usuario = this.authService.getUsuario();
+      this.isAdmin = this.permissionService.esAdministrador();
       this.userName  = usuario?.nombre_completo ?? 'Usuario';
       this.userRole  = usuario?.rol?.nombre
         ? this.formatearRol(usuario.rol.nombre)
         : 'Sin rol';
     } else {
+      this.isAdmin = false;
       this.userName = '';
       this.userRole = '';
     }

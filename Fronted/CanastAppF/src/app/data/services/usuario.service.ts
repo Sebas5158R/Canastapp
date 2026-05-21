@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import {
   Usuario,
-  LoginRequest,
-  LoginResponse,
   CreateUsuarioRequest,
+  CreateUsuarioResponse,
+  RolInfo,
 } from '../interfaces/usuario.interface';
 
 @Injectable({
@@ -22,8 +21,20 @@ export class UsuarioService {
     return this.api.get<Usuario[]>(this.path);
   }
 
-  getRoles(): Observable<string[]> {
-    return this.api.get<string[]>(`${this.path}/roles`);
+  createUsuario(data: CreateUsuarioRequest): Observable<CreateUsuarioResponse> {
+    return this.api.post<CreateUsuarioResponse>(this.path, data);
+  }
+
+  updateUsuario(id: string, data: Partial<CreateUsuarioRequest>): Observable<CreateUsuarioResponse> {
+    return this.api.put<CreateUsuarioResponse>(`${this.path}/${id}`, data);
+  }
+
+  deleteUsuario(id: string): Observable<void> {
+    return this.api.delete<void>(`${this.path}/${id}`);
+  }
+
+  getRoles(): Observable<RolInfo[]> {
+    return this.api.get<RolInfo[]>(`${this.path}/roles`);
   }
 
   getPermisosRol(nombreRol: string): Observable<string[]> {

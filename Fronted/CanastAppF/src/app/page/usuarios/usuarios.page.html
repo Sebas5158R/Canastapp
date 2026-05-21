@@ -1,0 +1,126 @@
+<ion-header class="usuarios-header">
+  <ion-toolbar>
+    <ion-title>Gestión de usuarios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="usuarios-content" [fullscreen]="true">
+  <section class="hero-card">
+    <div class="hero-copy">
+      <p class="eyebrow">Administrador</p>
+      <h1>Crear usuarios y asignar roles</h1>
+    </div>
+
+    <div class="hero-actions">
+      <ion-button fill="outline" color="dark" (click)="cargarDatos()" [disabled]="cargando" style="background-color: blue;">
+        <ion-icon slot="start" name="refresh-outline"></ion-icon>
+        Actualizar
+      </ion-button>
+
+      <ion-button color="primary" routerLink="/usuarios/listado">
+        <ion-icon slot="start" name="list-outline"></ion-icon>
+        Ver todos
+      </ion-button>
+    </div>
+  </section>
+
+  <section class="layout-grid">
+    <article class="panel form-panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-label">Nuevo usuario</p>
+          <h2>Alta rápida</h2>
+        </div>
+        <ion-icon name="person-add-outline"></ion-icon>
+      </div>
+
+      <form (ngSubmit)="guardar()" #usuarioForm="ngForm" class="user-form">
+        <ion-item lines="full">
+          <ion-label position="stacked">Nombre completo</ion-label>
+          <ion-input [(ngModel)]="form.nombre_completo" name="nombre_completo" placeholder="Ej. Juan Pérez López"
+            required></ion-input>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Identificación</ion-label>
+          <ion-input [(ngModel)]="form.numero_identificacion" name="numero_identificacion"
+            placeholder="Opcional"></ion-input>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Correo</ion-label>
+          <ion-input [(ngModel)]="form.correo" name="correo" type="email" placeholder="Opcional"></ion-input>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Rol</ion-label>
+          <ion-select [(ngModel)]="form.rol_id" name="rol_id" placeholder="Selecciona un rol" interface="popover"
+            required>
+            <ion-select-option *ngFor="let rol of roles; trackBy: trackByRol" [value]="rol.id">
+              {{ rol.nombre }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <p class="helper-text">
+          El correo se construye automáticamente a partir del nombre y se evitarán duplicados.
+        </p>
+
+        <div *ngIf="errorMsg" class="message error-message">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>{{ errorMsg }}</span>
+        </div>
+
+        <div *ngIf="exitoMsg" class="message success-message">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>{{ exitoMsg }}</span>
+        </div>
+
+        <ion-button expand="block" type="submit" [disabled]="guardando || cargando">
+          <ion-spinner *ngIf="guardando" name="crescent" slot="start"></ion-spinner>
+          <span *ngIf="!guardando">Crear usuario</span>
+          <span *ngIf="guardando">Creando...</span>
+        </ion-button>
+      </form>
+    </article>
+
+    <article class="panel list-panel">
+      <div class="panel-header">
+        <div>
+          <p class="panel-label">Usuarios</p>
+          <h2>Listado reciente</h2>
+        </div>
+        <ion-icon name="people-outline"></ion-icon>
+      </div>
+
+      <div *ngIf="cargando" class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando usuarios...</p>
+      </div>
+
+      <ng-container *ngIf="!cargando">
+        <div *ngIf="usuarios.length === 0" class="empty-state">
+          <p>No hay usuarios registrados todavía.</p>
+        </div>
+
+        <div *ngFor="let usuario of usuarios; trackBy: trackByUsuario" class="user-card">
+          <div class="user-card-head">
+            <div>
+              <h3>{{ usuario.nombre_completo }}</h3>
+              <p>{{ usuario.correo }}</p>
+            </div>
+            <ion-badge [color]="usuario.activo ? 'success' : 'medium'">
+              {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+            </ion-badge>
+          </div>
+
+          <div class="user-meta">
+            <span><strong>Identificación:</strong> {{ usuario.numero_identificacion || 'Sin dato' }}</span>
+            <span><strong>Rol:</strong> {{ usuario.rol?.nombre || 'Sin rol' }}</span>
+            <span><strong>Creado:</strong> {{ usuario.fecha_creacion || 'Sin fecha' }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </article>
+  </section>
+</ion-content>

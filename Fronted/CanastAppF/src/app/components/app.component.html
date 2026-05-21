@@ -31,20 +31,22 @@
     <ion-content class="menu-content">
       <p class="nav-section-label">NAVEGACIÓN</p>
       <nav class="menu-nav">
-        <a
-          *ngFor="let item of menuItems"
-          class="nav-item"
-          [class.active]="isActive(item.url)"
-          (click)="navigate(item.url)"
-        >
-          <span class="nav-icon-wrap">
-            <ion-icon [name]="item.icon"></ion-icon>
-          </span>
-          <span class="nav-label">{{ item.title }}</span>
-          <span class="nav-arrow">
-            <ion-icon name="chevron-forward-outline"></ion-icon>
-          </span>
-        </a>
+        <ng-container *ngFor="let item of menuItems">
+          <a
+            *ngIf="!item.adminOnly || isAdmin"
+            class="nav-item"
+            [class.active]="isActive(item.url)"
+            (click)="navigate(item.url)"
+          >
+            <span class="nav-icon-wrap">
+              <ion-icon [name]="item.icon"></ion-icon>
+            </span>
+            <span class="nav-label">{{ item.title }}</span>
+            <span class="nav-arrow">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </span>
+          </a>
+        </ng-container>
       </nav>
     </ion-content>
 

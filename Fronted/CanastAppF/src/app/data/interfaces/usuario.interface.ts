@@ -1,18 +1,19 @@
 export interface Rol {
-  id: number;
-  nombre: 'administrativo' | 'jefe_produccion' | 'auxiliar';
+  id: string;
+  nombre: 'administrativo' | 'jefe_produccion' | 'auxiliar' | string;
   descripcion?: string;
+  permisos?: string[];
   created_at?: string;
   updated_at?: string;
 }
 
 export interface Usuario {
-  id: number;
+  id: string;
   nombre_completo: string;
   numero_identificacion?: string;
   correo: string;
-  rol_id?: number;
-  rol?: Rol;
+  rol_id?: string;
+  rol?: Rol | null;
   activo: boolean;
   fecha_creacion?: string;
   ultimo_acceso?: string;
@@ -33,7 +34,19 @@ export interface LoginResponse {
 export interface CreateUsuarioRequest {
   nombre_completo: string;
   numero_identificacion?: string;
-  correo: string;
-  contrasena: string;
-  rol_id: number;
+  correo?: string;
+  rol_id: string;
+}
+
+export interface RolInfo {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+  permisos?: string[];
+}
+
+export interface CreateUsuarioResponse {
+  message: string;
+  correo_generado: string;
+  usuario: Usuario;
 }
