@@ -7,7 +7,13 @@ const createHttpError = (statusCode, message) => {
 };
 
 const parseBigIntId = (value, fieldName = "id") => {
+  // Si es null, undefined, o la cadena "postgres"
+  if (value === null || value === undefined || value === "postgres") {
+    return null;
+  }
+  
   if (typeof value === "bigint") return value;
+  
   try {
     return BigInt(value);
   } catch {
@@ -219,7 +225,7 @@ export const createOrden = async (data, usuarioId) => {
     throw createHttpError(400, "fecha_requerida inválida");
 
   const productoId = parseBigIntId(data.producto_id, "producto_id");
-  const creadorId = parseBigIntId(usuarioId, "usuario_id");
+  const creadorId = usuarioId && usuarioId !== "postgres" ? parseBigIntId(usuarioId, "usuario_id") : null;
 
   // Obtener producto con su receta y materias primas
   const producto = await prisma.productos.findUnique({
@@ -317,7 +323,7 @@ export const createOrden = async (data, usuarioId) => {
         orden_produccion_id: orden.id,
         etapa: 'creacion',
         responsable_id: creadorId,
-        accion_realizada: `Orden creada - Producto: ${producto.nombre}, Cantidad: ${cantidad}`,
+         accion_realizada: `Cambio de estado de ${orden.estado} a ${nuevoEstado}`,
         observaciones: `Se descontaron ${movimientos.length} materias primas del inventario`
       }
     });
@@ -342,8 +348,16 @@ export const createOrden = async (data, usuarioId) => {
 
 // ── UPDATE ESTADO ────────────────────────────────────────
 export const actualizarEstado = async (id, data, usuarioId) => {
+  console.log('=== ACTUALIZAR ESTADO ===');
+  console.log('1. id recibido:', id, 'tipo:', typeof id);
+  console.log('2. usuarioId recibido:', usuarioId, 'tipo:', typeof usuarioId);
+  console.log('3. data:', data);
+
   const ordenId = parseBigIntId(id, "orden_id");
+  console.log('4. ordenId después de parseBigIntId:', ordenId);
+
   const nuevoEstado = data.estado;
+  console.log('5. nuevoEstado:', nuevoEstado);
 
   if (!nuevoEstado || !ESTADOS_VALIDOS.includes(nuevoEstado))
     throw createHttpError(400, `estado inválido. Valores posibles: ${ESTADOS_VALIDOS.join(", ")}`);
@@ -360,7 +374,7 @@ export const actualizarEstado = async (id, data, usuarioId) => {
   }
 
   const updateData = {
-    estado:       nuevoEstado,
+    estado: nuevoEstado,
     observaciones: data.observaciones?.trim() || orden.observaciones,
   };
 
@@ -368,19 +382,21 @@ export const actualizarEstado = async (id, data, usuarioId) => {
     updateData.fecha_cancelacion = new Date();
   }
 
+  // Temporal: quitar include para probar
   const ordenActualizada = await prisma.ordenes_produccion.update({
-    where:   { id: ordenId },
-    data:    updateData,
-    include: includeProducto,
+    where: { id: ordenId },
+    data: updateData,
+    // include: includeProducto,  // ← Comentado para probar
   });
 
   // Registrar en trazabilidad
   await prisma.trazabilidad_proceso.create({
     data: {
       orden_produccion_id: ordenId,
+      etapa: 'cambio_estado',
       tipo_evento: 'cambio_estado',
       descripcion: `Estado cambiado de ${orden.estado} a ${nuevoEstado}`,
-      responsable_id: parseBigIntId(usuarioId, "usuario_id"),
+      responsable_id: usuarioId && usuarioId !== "postgres" ? parseBigIntId(usuarioId, "usuario_id") : null,
       datos_adicionales: JSON.stringify({ estado_anterior: orden.estado, estado_nuevo: nuevoEstado })
     }
   });

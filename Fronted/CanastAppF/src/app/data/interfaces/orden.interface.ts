@@ -1,7 +1,7 @@
 export interface Orden {
-  id: string;
-  numero_orden: string;
-  producto_id: string;
+  id: number;
+  numero_orden?: string;
+  producto_id: number;
   producto_nombre?: string;
   cantidad_planeada: number;
   cantidad_producida: number;
@@ -15,6 +15,7 @@ export interface Orden {
   created_at: Date | string;
   updated_at: Date | string;
   created_by?: number;
+  creador_nombre?: string;
 }
 
 export interface RegistroProduccion {

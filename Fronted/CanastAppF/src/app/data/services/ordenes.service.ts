@@ -6,7 +6,7 @@ import {
   Orden, 
   RegistroProduccion, 
   EntregaProducto, 
-  CreateOrdenDTO, 
+  CreateOrdenRequest, 
   UpdateEstadoDTO 
 } from '../interfaces/orden.interface';
 
@@ -34,7 +34,7 @@ export class OrdenesService {
     return this.api.get<Orden>(`${this.path}/${id}`);
   }
 
-  createOrden(orden: CreateOrdenDTO): Observable<Orden> {
+  createOrden(orden: CreateOrdenRequest): Observable<Orden> {
     return this.api.post<Orden>(this.path, orden);
   }
 

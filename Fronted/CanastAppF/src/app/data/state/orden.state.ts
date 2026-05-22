@@ -70,25 +70,25 @@ export class OrdenState {
   }
 
   updateEstado(id: string, estado: string, observaciones?: string): void {
-    this.loading.set(true);
-    
-    this.ordenesService.actualizarEstado(id, { estado: estado as any, observaciones })
-      .subscribe({
-        next: (ordenActualizada) => {
-          this.ordenes.update(ordenes => 
-            ordenes.map(orden => orden.id === id ? ordenActualizada : orden)
-          );
-          if (this.ordenSeleccionada()?.id === id) {
-            this.ordenSeleccionada.set(ordenActualizada);
-          }
-          this.loading.set(false);
-        },
-        error: (err) => {
-          this.error.set(err.message || 'Error al actualizar estado');
-          this.loading.set(false);
+  this.loading.set(true);
+  
+  this.ordenesService.actualizarEstado(id, { estado: estado as any, observaciones })
+    .subscribe({
+      next: (ordenActualizada) => {
+        this.ordenes.update(ordenes => 
+          ordenes.map(orden => orden.id.toString() === id ? ordenActualizada : orden)  // ← Convertir a string para comparar
+        );
+        if (this.ordenSeleccionada()?.id.toString() === id) {  // ← Convertir a string
+          this.ordenSeleccionada.set(ordenActualizada);
         }
-      });
-  }
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.message || 'Error al actualizar estado');
+        this.loading.set(false);
+      }
+    });
+}
 
   setFiltroEstado(estado: string): void {
     this.filtroEstado.set(estado);

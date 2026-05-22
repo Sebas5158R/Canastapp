@@ -1,29 +1,11 @@
-<ion-header class="home-header">
-  <ion-toolbar>
-
-    <!-- Botón para abrir el menú lateral -->
-    <ion-buttons slot="start">
-      <!-- autoHide="false" fuerza que el botón aparezca aunque no haya menú detectado -->
-<ion-menu-button autoHide="false" menu="start"></ion-menu-button>
-    </ion-buttons>
-
-    <ion-title class="home-title">
-      <span class="title-brand">Canastapp</span>
-    </ion-title>
-
-    <!-- Acciones rápidas en el header -->
-    <ion-buttons slot="end">
-      <ion-button class="header-action-btn" title="Notificaciones">
-        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-
-  </ion-toolbar>
-</ion-header>
-
 <ion-content class="home-content" [fullscreen]="true">
+  
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
   <section class="dashboard-shell ion-padding">
+    <!-- Hero Card -->
     <div class="hero-card">
       <div class="hero-copy">
         <p class="eyebrow">Panel administrativo</p>
@@ -45,8 +27,9 @@
       </div>
     </div>
 
+    <!-- Metric Grid -->
     <div class="metric-grid">
-      <article class="metric-card" *ngFor="let card of metricas" [class]="'metric-card tone-' + card.tone">
+      <article class="metric-card" *ngFor="let card of metricas()" [class]="'metric-card tone-' + card.tone">
         <div class="metric-icon">
           <ion-icon [name]="card.icon"></ion-icon>
         </div>
@@ -58,6 +41,7 @@
       </article>
     </div>
 
+    <!-- Acciones rápidas y Alertas -->
     <section class="panel-grid">
       <article class="panel primary-panel">
         <div class="panel-heading">
@@ -97,7 +81,7 @@
         </div>
 
         <div class="alert-list">
-          <div class="alert-item" *ngFor="let alert of alertas" [class]="'alert-' + alert.tone">
+          <div class="alert-item" *ngFor="let alert of alertas()" [class]="'alert-' + alert.tone">
             <span class="alert-icon">
               <ion-icon [name]="alert.icon"></ion-icon>
             </span>
@@ -111,6 +95,7 @@
       </article>
     </section>
 
+    <!-- Producción y Actividad -->
     <section class="panel bottom-grid">
       <article class="panel mini-panel">
         <div class="panel-heading">
@@ -142,7 +127,7 @@
         </div>
 
         <div class="activity-list">
-          <div class="activity-item" *ngFor="let item of actividadReciente">
+          <div class="activity-item" *ngFor="let item of actividadReciente()">
             <span class="activity-icon">
               <ion-icon [name]="item.icon"></ion-icon>
             </span>
@@ -156,5 +141,4 @@
       </article>
     </section>
   </section>
-
 </ion-content>

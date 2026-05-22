@@ -6,6 +6,7 @@ import { OrdenState } from 'src/app/data/state/orden.state';
 import { Orden } from 'src/app/data/interfaces/orden.interface';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CrearOrdenModalComponent } from './modals/crear-orden-modal/crear-orden-modal.component';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-ordenes',
@@ -18,7 +19,7 @@ export class OrdenesPage implements OnInit {
   private ordenState = inject(OrdenState);
   private destroyRef = inject(DestroyRef);
   private alertController = inject(AlertController);
-  private modalController = inject(ModalController); // ← AGREGAR
+  private modalController = inject(ModalController);
 
   // Signals del state
   ordenes = this.ordenState.ordenes;
@@ -32,20 +33,7 @@ export class OrdenesPage implements OnInit {
   estadosDisponibles = ['pendiente', 'en_produccion', 'completada', 'cancelada'];
   selectedOrden: Orden | null = null;
   showModal = false;
-   async abrirModalNuevaOrden() {
-    const modal = await this.modalController.create({
-      component: CrearOrdenModalComponent,
-      componentProps: {}
-    });
 
-    modal.onDidDismiss().then((result) => {
-      if (result.data?.success) {
-        this.cargarOrdenes(); // Recargar la lista
-      }
-    });
-
-    await modal.present();
-  }
   constructor() {}
 
   ngOnInit() {
@@ -65,41 +53,75 @@ export class OrdenesPage implements OnInit {
     this.ordenState.setFiltroEstado(estado);
   }
 
-  verDetalle(orden: Orden) {
-    this.selectedOrden = orden;
-    this.ordenState.loadRegistrosProduccion(orden.id);
-    this.ordenState.loadEntregas(orden.id);
-    this.showModal = true;
-  }
+ verDetalle(orden: Orden) {
+  console.log('1. Orden recibida:', orden);
+  console.log('2. ID de orden:', orden.id);
+  
+  this.selectedOrden = orden;
+  console.log('3. selectedOrden asignado:', this.selectedOrden);
+  this.showModal = true;
+  this.ordenState.loadRegistrosProduccion(orden.id.toString());
+  this.ordenState.loadEntregas(orden.id.toString());
+  
+  
+  console.log('4. showModal:', this.showModal);
+}
 
   cerrarModal() {
     this.showModal = false;
     this.selectedOrden = null;
   }
 
-  async cambiarEstado() {
+  async abrirModalNuevaOrden() {
+    const modal = await this.modalController.create({
+      component: CrearOrdenModalComponent,
+      componentProps: {}
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data?.success) {
+        this.cargarOrdenes();
+      }
+    });
+
+    await modal.present();
+  }
+
+ async cambiarEstado() {
   if (!this.selectedOrden) return;
+
+  // Filtrar el estado actual
+  const estadosDisponibles = this.estadosDisponibles.filter(
+    estado => estado !== this.selectedOrden?.estado
+  );
+
+  if (estadosDisponibles.length === 0) {
+    const alert = await this.alertController.create({
+      header: 'Sin cambios',
+      message: 'La orden ya está en el estado final',
+      buttons: ['OK']
+    });
+    await alert.present();
+    return;
+  }
 
   const alert = await this.alertController.create({
     header: 'Cambiar Estado',
-    subHeader: `Orden: ${this.selectedOrden.numero_orden}`,
-    inputs: this.estadosDisponibles.map(estado => ({
+    subHeader: `Orden: ${this.selectedOrden.numero_orden || this.selectedOrden.id}`,
+    inputs: estadosDisponibles.map(estado => ({
       name: 'estado',
       type: 'radio' as const,
       label: this.getEstadoTexto(estado),
       value: estado,
-      checked: estado === this.selectedOrden?.estado
+      checked: false
     })),
     buttons: [
-      {
-        text: 'Cancelar',
-        role: 'cancel'
-      },
+      { text: 'Cancelar', role: 'cancel' },
       {
         text: 'Actualizar',
         handler: (data) => {
-          if (data && data !== this.selectedOrden?.estado) {
-            this.ordenState.updateEstado(this.selectedOrden!.id, data);
+          if (data) {
+            this.ordenState.updateEstado(this.selectedOrden!.id.toString(), data);
             this.cerrarModal();
           }
         }
