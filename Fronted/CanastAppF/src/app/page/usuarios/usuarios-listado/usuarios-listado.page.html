@@ -16,12 +16,39 @@
 
   <div class="table-wrapper">
 
-    <div *ngIf="cargando" class="loading">
-      <ion-spinner></ion-spinner>
+    <!-- Hero + summary + search -->
+    <section class="hero-card">
+      <div class="hero-copy">
+        <p class="eyebrow">Administración</p>
+        <h1>Usuarios</h1>
+        <p>Gestiona cuentas, roles y estados desde este panel.</p>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <strong>{{ totalUsuarios() }}</strong>
+          <span>Total</span>
+        </div>
+        <div class="hero-stat hero-stat--accent">
+          <strong>{{ contarActivos() }}</strong>
+          <span>Activos</span>
+        </div>
+        <div class="hero-stat">
+          <strong>{{ contarPorRol('Administrador') }}</strong>
+          <span>Admins</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="search-bar">
+      <ion-icon name="search-outline" class="search-icon"></ion-icon>
+      <input class="search-input" type="text" placeholder="Buscar nombre, correo o rol..." [(ngModel)]="busqueda" />
+      <button *ngIf="busqueda" class="search-clear" (click)="busqueda = ''"><ion-icon name="close-outline"></ion-icon></button>
     </div>
 
-    <table *ngIf="!cargando">
+    <div *ngIf="cargando" class="loading"><ion-spinner></ion-spinner></div>
 
+    <!-- Desktop: table -->
+    <table class="users-table" *ngIf="!cargando">
       <thead>
         <tr>
           <th>Nombre</th>
@@ -31,42 +58,43 @@
           <th>Acciones</th>
         </tr>
       </thead>
-
       <tbody>
-
-        <tr *ngFor="let usuario of usuarios">
-
+        <tr *ngFor="let usuario of filtrarUsuarios()">
           <td>{{ usuario.nombre_completo }}</td>
-
           <td>{{ usuario.correo }}</td>
-
           <td>{{ usuario.rol?.nombre }}</td>
-
-          <td>
-            <ion-badge [color]="usuario.activo ? 'success' : 'medium'">
-              {{ usuario.activo ? 'Activo' : 'Inactivo' }}
-            </ion-badge>
-          </td>
-
+          <td><ion-badge [color]="usuario.activo ? 'success' : 'medium'">{{ usuario.activo ? 'Activo' : 'Inactivo' }}</ion-badge></td>
           <td class="actions">
-
             <ion-button fill="clear" color="primary" size="small" (click)="editarUsuario(usuario)">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-              Editar
+              <ion-icon slot="icon-only" name="create-outline"></ion-icon>Editar
             </ion-button>
-
             <ion-button fill="clear" color="danger" size="small" (click)="confirmarEliminar(usuario)">
-              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-              Eliminar
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>Eliminar
             </ion-button>
-
           </td>
-
         </tr>
-
       </tbody>
-
     </table>
+
+    <!-- Mobile: cards -->
+    <div class="user-grid" *ngIf="!cargando">
+      <article class="user-card" *ngFor="let usuario of filtrarUsuarios()">
+        <div class="user-card-top">
+          <div>
+            <p class="user-name">{{ usuario.nombre_completo }}</p>
+            <p class="user-email">{{ usuario.correo }}</p>
+          </div>
+          <ion-badge [color]="usuario.activo ? 'success' : 'medium'">{{ usuario.activo ? 'Activo' : 'Inactivo' }}</ion-badge>
+        </div>
+        <div class="user-meta">
+          <span class="role">{{ usuario.rol?.nombre }}</span>
+        </div>
+        <div class="user-actions">
+          <button class="btn" (click)="editarUsuario(usuario)">Editar</button>
+          <button class="btn btn-danger" (click)="confirmarEliminar(usuario)">Eliminar</button>
+        </div>
+      </article>
+    </div>
 
   </div>
 

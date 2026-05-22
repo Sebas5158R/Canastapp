@@ -60,6 +60,14 @@ export class InventarioPage implements OnInit {
     return q ? lista.filter(m => m.nombre.toLowerCase().includes(q)) : lista;
   }
 
+  contarCriticos(lista: MateriaPrima[]): number {
+    return lista.filter((materia) => this.estadoStock(materia) === 'critico').length;
+  }
+
+  contarConVencimiento(lista: MateriaPrima[]): number {
+    return lista.filter((materia) => !!materia.fecha_vencimiento).length;
+  }
+
   estadoStock(m: MateriaPrima): 'critico' | 'exceso' | 'normal' {
     if (+m.cantidad_disponible <= +m.stock_minimo) return 'critico';
     if (+m.cantidad_disponible >= +m.stock_maximo) return 'exceso';

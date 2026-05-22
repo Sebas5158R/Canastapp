@@ -22,20 +22,75 @@
 
     <!-- Lista de productos -->
     <ng-container *ngIf="!cargando()">
+      <ng-container *ngIf="productos$ | async as productos">
 
       <!-- Empty -->
-      <div class="empty-state" *ngIf="(productos$ | async)?.length === 0">
+      <div class="empty-state" *ngIf="productos.length === 0">
         <ion-icon name="cube-outline" class="empty-icon"></ion-icon>
         <p class="empty-text">No hay productos registrados.</p>
         <p class="empty-sub">Usa el botón <strong>+</strong> para agregar el primero.</p>
       </div>
 
+      <!-- Hero / resumen -->
+      <div class="products-hero" *ngIf="productos.length > 0">
+        <div class="hero-left">
+          <p class="eyebrow">Catálogo</p>
+          <h1 class="hero-heading">Productos</h1>
+          <p class="hero-copy">Gestiona productos, recetas y costos desde una sola vista.</p>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span class="stat-label">Productos</span>
+            <strong class="stat-value">{{ totalProductos(productos) }}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Sin receta</span>
+            <strong class="stat-value">{{ contarSinReceta(productos) }}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Con costo</span>
+            <strong class="stat-value">{{ contarConCosto(productos) }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary cards -->
+      <section class="summary-grid" *ngIf="productos.length > 0">
+        <article class="summary-card">
+          <span class="summary-label">Total productos</span>
+          <strong>{{ totalProductos(productos) }}</strong>
+        </article>
+        <article class="summary-card summary-card--warning">
+          <span class="summary-label">Sin receta</span>
+          <strong>{{ contarSinReceta(productos) }}</strong>
+        </article>
+        <article class="summary-card summary-card--soft">
+          <span class="summary-label">Con costo</span>
+          <strong>{{ contarConCosto(productos) }}</strong>
+        </article>
+      </section>
+
+      <!-- Buscador -->
+      <div class="search-bar">
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Buscar producto, descripción o unidad..."
+          [(ngModel)]="busqueda"
+        />
+        <button *ngIf="busqueda()" class="search-clear" (click)="busqueda.set('')">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
       <!-- Grid -->
-      <div class="products-grid" *ngIf="(productos$ | async)?.length! > 0">
+      <div class="products-grid" *ngIf="productos.length > 0">
 
         <div
           class="product-card"
-          *ngFor="let producto of productos$ | async; trackBy: trackById"
+          *ngFor="let producto of productos; trackBy: trackById"
         >
 
           <!-- Cabecera de tarjeta -->
@@ -57,9 +112,9 @@
                   <ion-icon name="cash-outline"></ion-icon>
                   ${{ producto.costo_estimado | number:'1.2-2' }}
                 </span>
-                <span class="meta-chip recipe" *ngIf="producto.recetas?.length">
+                <span class="meta-chip recipe" *ngIf="recetaCount(producto) > 0">
                   <ion-icon name="restaurant-outline"></ion-icon>
-                  {{ producto.recetas!.length }} ingrediente{{ producto.recetas!.length !== 1 ? 's' : '' }}
+                  {{ recetaCount(producto) }} ingrediente{{ recetaCount(producto) !== 1 ? 's' : '' }}
                 </span>
               </div>
             </div>
@@ -105,6 +160,7 @@
 
         </div>
       </div>
+      </ng-container>
     </ng-container>
 
   </div>

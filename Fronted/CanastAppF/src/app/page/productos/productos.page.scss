@@ -1,20 +1,25 @@
 // ─── Tokens ────────────────────────────────────────────
 $font:        'Arial', 'Helvetica Neue', Helvetica, sans-serif;
-$blue-dark:   #0d4f8a;
-$blue-mid:    #1a6fb5;
-$blue-light:  #a8d4f0;
-$border:      #c7dff0;
-$bg:          #f0f6fc;
-$surface:     #ffffff;
-$text-strong: #0d2d4a;
-$text-mid:    #2c5f8a;
-$text-soft:   #6b9bc0;
-$green:       #1a8a4f;
-$red:         #c0392b;
+$amber:       #d97706;
+$amber-soft:  #f59e0b;
+$stone:       #44403c;
+$stone-soft:  #78716c;
+$surface:     rgba(255,255,255,.82);
+$bg:          #f7f1e8;
+$border:      rgba(28,25,23,.08);
+$text:        #1c1917;
+
+ion-fab-button {
+  --background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  --border-radius: 22px;
+
+  box-shadow:
+    0 16px 35px rgba(245,158,11,.35);
+}
 
 // ─── Header ────────────────────────────────────────────
 ion-header.page-header ion-toolbar {
-  --background: #{$surface};
+  --background: linear-gradient(135deg, #ffffff 0%, #f7f1e8 100%);
   --border-color: #{$border};
   --border-width: 0 0 1.5px 0;
   --padding-start: 4px;
@@ -24,11 +29,16 @@ ion-header.page-header ion-toolbar {
   font-family: $font;
   font-size: 17px;
   font-weight: 700;
-  color: $blue-dark;
+  color: $text;
 }
 
 // ─── Content ───────────────────────────────────────────
-ion-content.page-content { --background: #{$bg}; }
+ion-content.page-content {
+  --background:
+    radial-gradient(circle at top left, rgba(251,191,36,.12), transparent 28%),
+    radial-gradient(circle at right top, rgba(14,165,233,.08), transparent 24%),
+    linear-gradient(180deg, #f7f1e8 0%, #fbfaf8 100%);
+}
 .content-wrapper { padding: 16px 12px 100px; }
 
 // ─── States ────────────────────────────────────────────
@@ -37,52 +47,208 @@ ion-content.page-content { --background: #{$bg}; }
   align-items: center; justify-content: center;
   padding: 60px 20px; gap: 12px;
 }
-.empty-icon { font-size: 52px; color: $blue-light; }
-.empty-text  { font-family: $font; font-size: 14px; color: $text-soft; margin: 0; }
-.empty-sub   { font-family: $font; font-size: 12px; color: $text-soft; margin: 0; }
+.empty-icon { font-size: 52px; color: $text; }
+.empty-text  { font-family: $font; font-size: 14px; color: $text; margin: 0; }
+.empty-sub   { font-family: $font; font-size: 12px; color: $text; margin: 0; }
 
 // ─── Grid ──────────────────────────────────────────────
-.products-grid { display: flex; flex-direction: column; gap: 14px; }
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+// Hero
+.products-hero {
+  border-radius: 30px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  border: 1px solid rgba(28,25,23,.08);
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 50px rgba(28,25,23,.08);
+}
+
+// Summary grid
+.summary-grid { display: flex; gap: 10px; margin: 10px 0 14px; }
+.summary-card { flex: 1; background: $surface; border: 1.5px solid $border; padding: 12px; border-radius: 6px; text-align: left; }
+.summary-card--warning { border-color: #f5c6c3; background: #fff6f6; }
+.summary-card--soft { border-color: #e8f5e9; background: #fbfffb; }
+.summary-label { display: block; font-size: 12px; color: $text; }
+
+// Search
+.search-bar { display: flex; align-items: center; gap: 8px; background: $surface; border: 1px solid $border; padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; }
+.search-icon { color: $text; font-size: 18px; }
+.search-input { flex: 1; border: none; outline: none; font-size: 14px; }
+.search-clear { background: transparent; border: none; cursor: pointer; }
 
 // ─── Card ──────────────────────────────────────────────
 .product-card {
-  background: $surface;
-  border: 1.5px solid $border;
-  border-radius: 4px;
+  border-radius: 28px;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(13,79,138,.06);
+
+  border: 1px solid rgba(28,25,23,.08);
+
+  background: rgba(255,255,255,.82);
+
+  backdrop-filter: blur(18px);
+
+  box-shadow: 0 18px 45px rgba(28,25,23,.06);
+
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow: 0 22px 60px rgba(28,25,23,.10);
 }
 
 .card-header {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 14px 12px;
+  padding: 12px 12px;
   cursor: pointer;
   user-select: none;
   &:active { background: $bg; }
 }
 
+.products-hero {
+
+  .eyebrow {
+    color: #b45309;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .hero-heading {
+    color: #1c1917;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 800;
+    margin: 6px 0 10px;
+  }
+
+  .hero-copy {
+    color: #57534e;
+    font-size: .96rem;
+    max-width: 52ch;
+    line-height: 1.5;
+  }
+
+}
+
+.hero-stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  min-width: 110px;
+
+  padding: 14px 16px;
+
+  border-radius: 20px;
+
+  background: linear-gradient(
+    135deg,
+    #1c1917 0%,
+    #3f3f46 100%
+  );
+
+  color: white;
+
+  box-shadow:
+    0 12px 28px rgba(28,25,23,.18);
+}
+
+.stat-label {
+  display: block;
+
+  font-size: .72rem;
+
+  color: rgba(255,255,255,.72);
+
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+
+  color: white;
+}
+
+.summary-card {
+  flex: 1;
+
+  border-radius: 22px;
+
+  padding: 16px;
+
+  background: rgba(255,255,255,.82);
+
+  border: 1px solid rgba(28,25,23,.08);
+
+  box-shadow: 0 12px 30px rgba(28,25,23,.06);
+
+  backdrop-filter: blur(14px);
+}
+
+.summary-label {
+  display: block;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: .08em;
+
+  text-transform: uppercase;
+
+  color: #78716c;
+  margin-bottom: 6px;
+}
+
+.summary-card strong {
+  display: block;
+
+  font-size: 1.6rem;
+
+  font-weight: 800;
+
+  color: #1c1917;
+  line-height: 1;
+}
+
 .card-icon-wrap {
-  flex-shrink: 0;
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #daeef9 0%, $bg 100%);
-  border: 1.5px solid $border;
-  display: flex; align-items: center; justify-content: center;
-  .card-icon { font-size: 20px; color: $blue-mid; }
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+
+  background: rgba(245,158,11,.12);
+
+  color: #d97706;
 }
 
 .card-main { flex: 1; min-width: 0; }
 
 .product-name {
-  margin: 0 0 3px;
-  font-family: $font; font-size: 15px; font-weight: 700; color: $text-strong;
+  margin: 0 0 4px;
+  font-family: $font; font-size: 15px; font-weight: 700; color: $text;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .product-desc {
   margin: 0 0 8px;
-  font-family: $font; font-size: 11px; color: $text-soft; line-height: 1.4;
+  font-family: $font; font-size: 11px; color: $text; line-height: 1.4;
 }
 
 .product-meta { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -91,10 +257,10 @@ ion-content.page-content { --background: #{$bg}; }
   display: inline-flex; align-items: center; gap: 3px;
   background: $bg; border: 1px solid $border;
   border-radius: 20px; padding: 2px 8px;
-  font-family: $font; font-size: 11px; color: $text-mid;
+  font-family: $font; font-size: 11px; color: $text;
   ion-icon { font-size: 11px; }
-  &.cost { background: #e8f5e9; border-color: #a5d6a7; color: $green; }
-  &.recipe { background: #e3f2fd; border-color: $blue-light; color: $blue-mid; }
+  &.cost { background: #e8f5e9; border-color: #a5d6a7;; }
+  &.recipe { background: #e3f2fd; border-color: #90caf9; }
 }
 
 .card-actions {
@@ -104,18 +270,21 @@ ion-content.page-content { --background: #{$bg}; }
 }
 
 .btn-receta {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: $blue-mid; color: #fff;
-  border: none; border-radius: 4px;
-  padding: 5px 10px;
-  font-family: $font; font-size: 11px; font-weight: 600; cursor: pointer;
-  white-space: nowrap;
-  ion-icon { font-size: 13px; }
-  &:active { background: $blue-dark; }
-}
+  border: none;
+  border-radius: 16px;
 
+  padding: 8px 14px;
+
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+
+  color: white;
+
+  font-weight: 700;
+
+  box-shadow: 0 8px 20px rgba(245,158,11,.25);
+}
 .arrow-icon {
-  font-size: 18px; color: $text-soft;
+  font-size: 18px; color: $text;
   transition: transform 0.2s ease;
   &.rotated { transform: rotate(180deg); }
 }
@@ -127,25 +296,31 @@ ion-content.page-content { --background: #{$bg}; }
   border-top: 1px solid transparent;
   &.visible { max-height: 500px; border-top-color: $border; }
 }
-.ingredients-inner { background: $bg; padding: 12px 16px; }
+.ingredients-inner {
+  background: rgba(245,245,244,.65);
+
+  backdrop-filter: blur(8px);
+
+  padding: 18px;
+}
 .ingredients-title {
   margin: 0 0 8px;
   font-family: $font; font-size: 12px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.5px; color: $text-mid;
+  text-transform: uppercase; letter-spacing: 0.5px; color: $text;
 }
 .ingredient-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 7px 0; border-bottom: 1px solid $border;
   &:last-child { border-bottom: none; }
 }
-.ing-name { font-family: $font; font-size: 13px; color: $text-strong; }
+.ing-name { font-family: $font; font-size: 13px; color: $text; }
 .ing-qty {
-  font-family: $font; font-size: 12px; font-weight: 600; color: $blue-mid;
+  font-family: $font; font-size: 12px; font-weight: 600; color: $text;
   background: $surface; border: 1px solid $border;
   padding: 2px 8px; border-radius: 12px;
 }
 .no-receta {
-  font-family: $font; font-size: 12px; color: $text-soft;
+  font-family: $font; font-size: 12px; color: $text;
   padding: 8px 0; text-align: center;
 }
 
@@ -156,6 +331,15 @@ ion-content.page-content { --background: #{$bg}; }
   font-family: $font;
 }
 
+.modal-container {
+  background:
+    linear-gradient(
+      180deg,
+      #fbfaf8 0%,
+      #f7f1e8 100%
+    );
+}
+
 .modal-header {
   display: flex; align-items: flex-start;
   justify-content: space-between;
@@ -163,13 +347,13 @@ ion-content.page-content { --background: #{$bg}; }
   border-bottom: 1.5px solid $border;
   background: $surface;
 }
-.modal-title   { margin: 0 0 2px; font-size: 17px; font-weight: 700; color: $text-strong; }
-.modal-subtitle { margin: 0; font-size: 12px; color: $text-soft; }
+.modal-title   { margin: 0 0 2px; font-size: 17px; font-weight: 700; color: $text; }
+.modal-subtitle { margin: 0; font-size: 12px; color: $text; }
 .modal-close-btn {
   background: $bg; border: 1px solid $border; border-radius: 50%;
   width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center; cursor: pointer;
-  ion-icon { font-size: 18px; color: $text-mid; }
+  ion-icon { font-size: 18px; color: $text; }
   &:active { background: $border; }
 }
 
@@ -187,7 +371,7 @@ ion-content.page-content { --background: #{$bg}; }
 .section-label {
   margin: 0 0 10px;
   font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.6px; color: $text-mid;
+  text-transform: uppercase; letter-spacing: 0.6px; color: $text;
 }
 .section-header-row {
   display: flex; align-items: center;
@@ -203,18 +387,29 @@ ion-content.page-content { --background: #{$bg}; }
 
 .form-label {
   display: block; margin-bottom: 5px;
-  font-size: 12px; font-weight: 600; color: $text-mid;
-  .required { color: $red; }
+  font-size: 12px; font-weight: 600; color: $text;
+  .required { color: #ef4444; }
 }
 
-.form-input {
-  width: 100%; box-sizing: border-box;
-  padding: 9px 12px;
-  background: $bg; border: 1.5px solid $border; border-radius: 4px;
-  font-family: $font; font-size: 13px; color: $text-strong;
-  outline: none;
-  &:focus { border-color: $blue-mid; background: $surface; }
-  &::placeholder { color: $text-soft; }
+.form-input,
+.form-select {
+  border-radius: 16px;
+
+  background: rgba(255,255,255,.9);
+
+  border: 1px solid rgba(28,25,23,.08);
+
+  padding: 14px;
+
+  transition: .18s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: #f59e0b;
+
+  box-shadow:
+    0 0 0 4px rgba(245,158,11,.12);
 }
 .form-textarea { resize: none; }
 
@@ -228,7 +423,7 @@ ion-content.page-content { --background: #{$bg}; }
   border-bottom: 1.5px solid $border;
   span {
     font-size: 10px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.4px; color: $text-soft;
+    text-transform: uppercase; letter-spacing: 0.4px; color: $text;
   }
 }
 
@@ -239,26 +434,24 @@ ion-content.page-content { --background: #{$bg}; }
   margin-bottom: 6px;
 }
 
-.col-ing  { }
-.col-qty  { }
-.col-um   { }
 .col-del  { display: flex; justify-content: center; }
+ 
 
 .form-select {
   width: 100%; box-sizing: border-box;
   padding: 8px 6px;
   background: $bg; border: 1.5px solid $border; border-radius: 4px;
-  font-family: $font; font-size: 12px; color: $text-strong;
+  font-family: $font; font-size: 12px; color: $text;
   outline: none; cursor: pointer;
-  &:focus { border-color: $blue-mid; background: $surface; }
+  &:focus { border-color: $text; background: $surface; }
 }
 
 .btn-add-line {
   display: inline-flex; align-items: center; gap: 4px;
-  background: transparent; border: 1.5px solid $blue-mid;
+  background: transparent; border: 1.5px solid $text;
   border-radius: 4px; padding: 4px 10px;
   font-family: $font; font-size: 12px; font-weight: 600;
-  color: $blue-mid; cursor: pointer;
+  color: $text; cursor: pointer;
   ion-icon { font-size: 14px; }
   &:active { background: #e3f2fd; }
 }
@@ -267,12 +460,12 @@ ion-content.page-content { --background: #{$bg}; }
   width: 28px; height: 28px;
   background: #fdecea; border: 1px solid #f5c6c3; border-radius: 4px;
   display: flex; align-items: center; justify-content: center; cursor: pointer;
-  ion-icon { font-size: 15px; color: $red; }
+  ion-icon { font-size: 15px; color: #ef4444; }
   &:active { background: #fbc6c0; }
 }
 
 .hint-text {
-  text-align: center; font-size: 12px; color: $text-soft;
+  text-align: center; font-size: 12px; color: $text;
   padding: 12px 0; margin: 0;
 }
 
@@ -288,7 +481,7 @@ ion-content.page-content { --background: #{$bg}; }
 .btn-cancel {
   flex: 1; padding: 11px;
   background: $bg; border: 1.5px solid $border; border-radius: 4px;
-  font-family: $font; font-size: 14px; font-weight: 600; color: $text-mid;
+  font-family: $font; font-size: 14px; font-weight: 600; color: $text;
   cursor: pointer;
   &:active { background: $border; }
 }
@@ -296,12 +489,12 @@ ion-content.page-content { --background: #{$bg}; }
 .btn-save {
   flex: 2; padding: 11px;
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  background: $blue-mid; border: none; border-radius: 4px;
+  background: $text; border: none; border-radius: 4px;
   font-family: $font; font-size: 14px; font-weight: 700; color: #fff;
   cursor: pointer;
   ion-icon { font-size: 16px; }
-  &:active { background: $blue-dark; }
-  &:disabled { background: $blue-light; cursor: not-allowed; }
+  &:active { background: $text; }
+  &:disabled { background: $border; cursor: not-allowed; }
 }
 
 .btn-spinner { width: 16px; height: 16px; --color: #fff; }
@@ -315,10 +508,10 @@ ion-content.page-content { --background: #{$bg}; }
   &:last-child { border-bottom: none; }
 }
 .receta-ing-info { display: flex; flex-direction: column; gap: 2px; }
-.receta-ing-name { font-size: 14px; color: $text-strong; font-weight: 600; }
-.receta-ing-um   { font-size: 11px; color: $text-soft; }
+.receta-ing-name { font-size: 14px; color: $text; font-weight: 600; }
+.receta-ing-um   { font-size: 11px; color: $text; }
 .receta-ing-qty  {
-  font-size: 13px; font-weight: 700; color: $blue-mid;
+  font-size: 13px; font-weight: 700; color: $text;
   background: $bg; border: 1px solid $border;
   padding: 3px 10px; border-radius: 20px;
   white-space: nowrap;

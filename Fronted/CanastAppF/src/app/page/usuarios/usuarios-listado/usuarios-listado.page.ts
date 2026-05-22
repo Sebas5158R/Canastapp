@@ -20,6 +20,7 @@ import {
 import { ModalController } from '@ionic/angular/standalone';
 import { EditarUsuarioModalComponent } from 'src/app/page/usuarios/editar-usuario-modal/editar-usuario-modal.component';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { UsuarioService } from 'src/app/data/services/usuario.service';
 import { forkJoin } from 'rxjs';
 import { RolInfo, Usuario } from 'src/app/data/interfaces/usuario.interface';
@@ -31,6 +32,7 @@ import { RolInfo, Usuario } from 'src/app/data/interfaces/usuario.interface';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     IonContent,
     IonHeader,
     IonToolbar,
@@ -57,6 +59,23 @@ export class UsuariosListadoPage implements OnInit {
   cargando = false;
 
   errorMsg = '';
+  busqueda = '';
+
+  // Helpers para resumen
+  totalUsuarios(): number { return this.usuarios.length; }
+  contarActivos(): number { return this.usuarios.filter(u => u.activo).length; }
+  contarPorRol(nombreRol: string): number { return this.usuarios.filter(u => u.rol?.nombre === nombreRol).length; }
+
+  filtrarUsuarios(): Usuario[] {
+    const q = this.busqueda.trim().toLowerCase();
+    if (!q) return this.usuarios;
+    return this.usuarios.filter(u => {
+      const nombre = u.nombre_completo?.toLowerCase() ?? '';
+      const correo = u.correo?.toLowerCase() ?? '';
+      const rol = u.rol?.nombre?.toLowerCase() ?? '';
+      return nombre.includes(q) || correo.includes(q) || rol.includes(q);
+    });
+  }
 
   ngOnInit() {
     this.cargarDatos();

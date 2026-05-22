@@ -59,6 +59,7 @@ export class ProductosPage implements OnInit {
   // ─── Modal receta (ver) ─────────────────────────────
   modalRecetaAbierto       = signal(false);
   productoRecetaActual     = signal<Producto | null>(null);
+  busqueda = signal('');
 
   // ─── Expansión de tarjetas ──────────────────────────
   expandidos = new Set<number>();
@@ -137,6 +138,28 @@ export class ProductosPage implements OnInit {
     this.modalAbierto.set(true);
   }
 
+  filtrarProductos(productos: Producto[] | null | undefined) {
+    const q = this.busqueda().trim().toLowerCase();
+    if (!productos) return [];
+    if (!q) return productos;
+    return productos.filter(p => {
+      const nombre = p.nombre?.toString().toLowerCase() ?? '';
+      const desc = p.descripcion?.toString().toLowerCase() ?? '';
+      const um = p.unidad_medida?.toString().toLowerCase() ?? '';
+      return nombre.includes(q) || desc.includes(q) || um.includes(q);
+    });
+  }
+
+  contarSinReceta(productos: Producto[] | null | undefined): number {
+    if (!productos) return 0;
+    return productos.filter(p => !(p.recetas && p.recetas.length > 0)).length;
+  }
+
+  contarConCosto(productos: Producto[] | null | undefined): number {
+    if (!productos) return 0;
+    return productos.filter(p => p.costo_estimado != null).length;
+  }
+
   cerrarModal(): void {
     this.modalAbierto.set(false);
   }
@@ -159,6 +182,19 @@ export class ProductosPage implements OnInit {
 
   nombreMateriaPrima(id: number): string {
     return this.materiaPrimaMap().get(id)?.nombre ?? `ID ${id}`;
+  }
+
+  recetaCount(producto: Producto): number {
+    return producto.recetas?.length ?? 0;
+  }
+
+  totalProductos(productos: Producto[] | null | undefined): number {
+    return productos?.length ?? 0;
+  }
+
+  totalIngredientes(productos: Producto[] | null | undefined): number {
+    if (!productos || productos.length === 0) return 0;
+    return productos.reduce((sum, p) => sum + (p.recetas?.length ?? 0), 0);
   }
 
   // ─── Guardar ──────────────────────────────────────────

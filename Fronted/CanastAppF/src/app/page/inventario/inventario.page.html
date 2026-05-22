@@ -1,10 +1,7 @@
 <ion-header class="page-header">
   <ion-toolbar>
-
-    <!-- Título -->
     <ion-title class="page-title">Inventario</ion-title>
 
-    <!-- Botón agregar -->
     <ion-buttons slot="end">
       <button class="add-btn" (click)="crearMateria()" title="Nueva materia prima">
         <ion-icon name="add-outline"></ion-icon>
@@ -23,13 +20,49 @@
 
   <div class="content-wrapper">
 
+    <section class="hero-card">
+      <div class="hero-copy">
+        <p class="eyebrow">Control de stock</p>
+        <h1>Inventario en tiempo real</h1>
+        <p>
+          Consulta materias primas, identifica stock crítico y gestiona movimientos desde una sola vista.
+        </p>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <strong>Stock bajo</strong>
+          <span>Atención inmediata</span>
+        </div>
+        <div class="hero-stat hero-stat--accent">
+          <strong>Acciones rápidas</strong>
+          <span>Editar, mover o eliminar</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="summary-grid" *ngIf="inventario$ | async as listaResumen">
+      <article class="summary-card">
+        <span class="summary-label">Materias registradas</span>
+        <strong>{{ listaResumen.length }}</strong>
+      </article>
+      <article class="summary-card summary-card--warning">
+        <span class="summary-label">En stock crítico</span>
+        <strong>{{ contarCriticos(listaResumen) }}</strong>
+      </article>
+      <article class="summary-card summary-card--soft">
+        <span class="summary-label">Con vencimiento</span>
+        <strong>{{ contarConVencimiento(listaResumen) }}</strong>
+      </article>
+    </section>
+
     <!-- Buscador -->
     <div class="search-bar">
       <ion-icon name="search-outline" class="search-icon"></ion-icon>
       <input
         class="search-input"
         type="text"
-        placeholder="Buscar materia prima..."
+        placeholder="Buscar materia prima, descripción o unidad..."
         [(ngModel)]="busqueda"
       />
       <button *ngIf="busqueda" class="search-clear" (click)="busqueda = ''">
@@ -53,41 +86,14 @@
     <ng-container *ngIf="!cargando && !errorCarga">
       <ng-container *ngIf="inventario$ | async as lista">
 
-        <!-- Cabecera de tabla -->
-        <div class="table-wrap" *ngIf="filtrarInventario(lista).length > 0; else emptyState">
-          <div class="table-head">
-            <span>Materia Prima</span>
-            <span>Stock</span>
-            <span>Estado</span>
-          </div>
+        <div class="inventory-grid" *ngIf="filtrarInventario(lista).length > 0; else emptyState">
+          <article class="inventory-card" [class.inventory-card--critical]="estadoStock(m) === 'critico'" *ngFor="let m of filtrarInventario(lista)">
+            <div class="inventory-card__top">
+              <div>
+                <p class="inventory-name">{{ m.nombre }}</p>
+                <p class="inventory-meta" *ngIf="m.descripcion">{{ m.descripcion }}</p>
+              </div>
 
-          <!-- Filas -->
-          <div
-            class="table-row"
-            [class.critico]="estadoStock(m) === 'critico'"
-            *ngFor="let m of filtrarInventario(lista)"
-          >
-            <!-- Columna nombre + meta -->
-            <div class="col-name">
-              <p class="mat-name">{{ m.nombre }}</p>
-              <p class="mat-meta" *ngIf="m.descripcion">{{ m.descripcion }}</p>
-              <p class="mat-vence" *ngIf="m.fecha_vencimiento">
-                <ion-icon name="time-outline"></ion-icon>
-                Vence: {{ m.fecha_vencimiento | date:'dd/MM/yyyy' }}
-              </p>
-            </div>
-
-            <!-- Columna stock -->
-            <div class="col-qty">
-              <span class="qty-value">{{ m.cantidad_disponible }}</span>
-              <span class="qty-unit">{{ m.unidad_medida }}</span>
-              <span class="qty-range">
-                {{ m.stock_minimo }} – {{ m.stock_maximo }}
-              </span>
-            </div>
-
-            <!-- Columna estado + acciones -->
-            <div class="col-actions">
               <span class="status-chip" [ngClass]="estadoStock(m)">
                 <ion-icon
                   [name]="estadoStock(m) === 'critico' ? 'warning-outline'
@@ -96,25 +102,41 @@
                 </ion-icon>
                 {{ labelEstado(m) }}
               </span>
+            </div>
 
-              <div class="row-btns">
-                <!-- Movimientos -->
-                <button class="row-btn btn-move" (click)="abrirMovimientos(m)" title="Movimientos">
-                  <ion-icon name="swap-horizontal-outline"></ion-icon>
-                </button>
-                <!-- Editar -->
-                <button class="row-btn btn-edit" (click)="editarMateria(m)" title="Editar">
-                  <ion-icon name="create-outline"></ion-icon>
-                </button>
-                <!-- Eliminar -->
-                <button class="row-btn btn-del" (click)="eliminarMateria(m)" title="Eliminar">
-                  <ion-icon name="trash-outline"></ion-icon>
-                </button>
+            <div class="inventory-stock">
+              <div>
+                <span class="stock-label">Stock actual</span>
+                <strong>{{ m.cantidad_disponible }}</strong>
+                <small>{{ m.unidad_medida }}</small>
+              </div>
+              <div>
+                <span class="stock-label">Mín / Máx</span>
+                <strong>{{ m.stock_minimo }} - {{ m.stock_maximo }}</strong>
               </div>
             </div>
 
-          </div><!-- /table-row -->
-        </div><!-- /table-wrap -->
+            <p class="inventory-expiration" *ngIf="m.fecha_vencimiento">
+              <ion-icon name="time-outline"></ion-icon>
+              Vence: {{ m.fecha_vencimiento | date:'dd/MM/yyyy' }}
+            </p>
+
+            <div class="inventory-actions">
+              <button class="row-btn btn-move" (click)="abrirMovimientos(m)" title="Movimientos">
+                <ion-icon name="swap-horizontal-outline"></ion-icon>
+                <span>Movimientos</span>
+              </button>
+              <button class="row-btn btn-edit" (click)="editarMateria(m)" title="Editar">
+                <ion-icon name="create-outline"></ion-icon>
+                <span>Editar</span>
+              </button>
+              <button class="row-btn btn-del" (click)="eliminarMateria(m)" title="Eliminar">
+                <ion-icon name="trash-outline"></ion-icon>
+                <span>Eliminar</span>
+              </button>
+            </div>
+          </article>
+        </div>
 
         <!-- Empty state -->
         <ng-template #emptyState>
