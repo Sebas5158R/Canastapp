@@ -1,0 +1,417 @@
+{
+  "C:\\Canastapp\\Fronted\\CanastAppF\\.eslintrc.json": {
+    "mtime": 1763157064.0,
+    "ast_hash": "92a4221340109c9421fdb2b9321d5029",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\angular-doctor.config.json": {
+    "mtime": 1779728860.5573487,
+    "ast_hash": "50c511d3e8eec3f04bd45b3b30c488c9",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\angular.json": {
+    "mtime": 1779737297.1290832,
+    "ast_hash": "c6caf74844b589478be77691cc114a0f",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\install.sh": {
+    "mtime": 1779731575.3883326,
+    "ast_hash": "c09760b1368fddc0a0d43dc601d540f0",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\ionic.config.json": {
+    "mtime": 1777913204.0,
+    "ast_hash": "159e86336f0b0027141e51e7686c69ea",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\karma.conf.js": {
+    "mtime": 1763157064.0,
+    "ast_hash": "d8990b50036be77bf6230964f8d6c380",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\package.json": {
+    "mtime": 1779729247.723258,
+    "ast_hash": "ab6440b9fb8bc3b0db2d15f5555b0242",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\tsconfig.app.json": {
+    "mtime": 1763139064.0,
+    "ast_hash": "c135ccd0dd2e92226c3bd66d832b43a2",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\tsconfig.json": {
+    "mtime": 1779482581.830927,
+    "ast_hash": "6b82b7a45f8b270dd9c6deedd9d15b48",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\tsconfig.spec.json": {
+    "mtime": 1763157064.0,
+    "ast_hash": "eba856676b131673479428bd6cd902a5",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\.vscode\\extensions.json": {
+    "mtime": 1763157064.0,
+    "ast_hash": "c7cb3add93706a8fc4ecf89d2a23f085",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\.vscode\\settings.json": {
+    "mtime": 1763157064.0,
+    "ast_hash": "1a8e72420ad5934aab909897c9ad51cf",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\main.ts": {
+    "mtime": 1779206278.0,
+    "ast_hash": "4ff54f6610109bc74e7166fb14be5e4d",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\polyfills.ts": {
+    "mtime": 1763139064.0,
+    "ast_hash": "ab174a7fc1c636de236a456e1d208cee",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\test.ts": {
+    "mtime": 1779278566.873294,
+    "ast_hash": "f664a62d7273005985fa1c3b53dc249c",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\zone-flags.ts": {
+    "mtime": 1763139064.0,
+    "ast_hash": "f9f30408d427d1fda86558d69dd34ee6",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\app.routes.ts": {
+    "mtime": 1779467988.5382428,
+    "ast_hash": "dfc836885c4ca6023e88359a2ac2ff58",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\components\\app.component.spec.ts": {
+    "mtime": 1777949444.0,
+    "ast_hash": "183b69b0ed077b1c5b46614a4540f5b9",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\components\\app.component.ts": {
+    "mtime": 1779467988.5442338,
+    "ast_hash": "88028c3066e11d4430a6b0fe6612ad43",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\core\\guards\\auth.guard.ts": {
+    "mtime": 1779206498.0,
+    "ast_hash": "6c0f743cff8f4c9a51f9a3ec143b8c71",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\core\\guards\\permission.guard.ts": {
+    "mtime": 1779215562.0,
+    "ast_hash": "9963a97cfddf2f5514d93451b281e217",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\core\\interceptors\\jwt.interceptor.ts": {
+    "mtime": 1779206258.0,
+    "ast_hash": "114406353a14c3e608b6d4e465b7ebc7",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\interfaces\\auth.interface.ts": {
+    "mtime": 1779729247.7252574,
+    "ast_hash": "f9d3a2272850be5924eb053b8393953e",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\interfaces\\materia-prima.interface.ts": {
+    "mtime": 1779729247.7302582,
+    "ast_hash": "a3740167ea982d90ed0e6f7a024cb831",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\interfaces\\movimiento-inventario.interface.ts": {
+    "mtime": 1779729247.7312584,
+    "ast_hash": "0255db56609da4b3262e45c33b4f82be",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\interfaces\\offline-queue.interface.ts": {
+    "mtime": 1779729247.73326,
+    "ast_hash": "16853d185d9794d5df4b752d179c35c4",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\interfaces\\orden.interface.ts": {
+    "mtime": 1779729247.7352595,
+    "ast_hash": "19c0b561fd7167f2c0820f21eeda4380",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\interfaces\\producto.interface.ts": {
+    "mtime": 1779729247.738261,
+    "ast_hash": "1a6c9db9c68dc272878e8324c83ac582",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\interfaces\\usuario.interface.ts": {
+    "mtime": 1779729247.744263,
+    "ast_hash": "ef3071f65cb43808f90e5a4931285f76",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\api.service.ts": {
+    "mtime": 1779282562.4444146,
+    "ast_hash": "477c94dbdcc8142b01b2244a18b1c771",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\auth.service.ts": {
+    "mtime": 1779282573.3354197,
+    "ast_hash": "e92b4214256fa565016f0dd967376965",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\materia-prima.service.ts": {
+    "mtime": 1779237024.0,
+    "ast_hash": "75a72b686d46b5b169f49a3ad0a6ee3c",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\network.service.ts": {
+    "mtime": 1779208598.0,
+    "ast_hash": "6be2d9e4124ff91c8e738e21f943b271",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\offline-queue.service.ts": {
+    "mtime": 1779208640.0,
+    "ast_hash": "eb6db0abe62e2af1318650a3019a430a",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\ordenes.service.ts": {
+    "mtime": 1779469862.290193,
+    "ast_hash": "bbff0b68a73eb9fb6af95b9af4140cf2",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\permission.service.ts": {
+    "mtime": 1779236726.0,
+    "ast_hash": "60b72e2d1b6ddf6237ed1b9375a7afa3",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\producto.service.ts": {
+    "mtime": 1779287633.0159883,
+    "ast_hash": "2b9eb4f0ec98d54651b6777d1a51e481",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\socket.service.ts": {
+    "mtime": 1779237018.0,
+    "ast_hash": "7fd7f03d29e23feb6c610b75ce501ea9",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\storage.service.ts": {
+    "mtime": 1779208582.0,
+    "ast_hash": "5b4e3a2b9947bc4219d03c1941fe5705",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\services\\usuario.service.ts": {
+    "mtime": 1779467988.5492454,
+    "ast_hash": "996c6fb8ecf000775413331e086b2b7f",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\state\\inventario.state.ts": {
+    "mtime": 1779210854.0,
+    "ast_hash": "0029519025fc25b23b8ee37780c144ab",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\state\\orden.state.ts": {
+    "mtime": 1779470189.0775006,
+    "ast_hash": "01b7a49438386e9cd1ff868cd633c6f0",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\data\\state\\producto.state.ts": {
+    "mtime": 1779207384.0,
+    "ast_hash": "4c7d63d29ece3b621c5337c1c5283466",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\home\\home.page.spec.ts": {
+    "mtime": 1777947914.0,
+    "ast_hash": "94f0222d936567fcb18df69218067dc7",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\home\\home.page.ts": {
+    "mtime": 1779471165.7389934,
+    "ast_hash": "9a7bda759b117b489a250ace5d734460",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\inventario\\inventario.page.ts": {
+    "mtime": 1779467988.5602484,
+    "ast_hash": "8d0f4106868d37920048d116d9b9d808",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\inventario\\modals\\materia-form\\materia-form.component.spec.ts": {
+    "mtime": 1779210998.0,
+    "ast_hash": "c82e097df1cd8656532440ec6010843a",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\inventario\\modals\\materia-form\\materia-form.component.ts": {
+    "mtime": 1779235962.0,
+    "ast_hash": "0825d25bd6a43a4783f15318de771e66",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\inventario\\modals\\movimientos\\movimientos.component.spec.ts": {
+    "mtime": 1779211034.0,
+    "ast_hash": "955ac7bdc188ac8166fd4482c3473ec0",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\inventario\\modals\\movimientos\\movimientos.component.ts": {
+    "mtime": 1779211224.0,
+    "ast_hash": "3803b9727c1aa7b59c63b4f688d5a872",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\login\\login.page.ts": {
+    "mtime": 1779214672.0,
+    "ast_hash": "1217b3026bce98b09a712b3373ce71cf",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\ordenes\\ordenes.page.ts": {
+    "mtime": 1779476005.5206025,
+    "ast_hash": "aa32831609e35953ab97bc54565ae9fd",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\ordenes\\modals\\crear-orden-modal\\crear-orden-modal.component.ts": {
+    "mtime": 1779288120.0953074,
+    "ast_hash": "fffa6deb4a3a66dc8fac27056284ac69",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\productos\\productos.page.spec.ts": {
+    "mtime": 1777943846.0,
+    "ast_hash": "1371336289f83092a11bb77cb54c9f94",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\productos\\productos.page.ts": {
+    "mtime": 1779467988.566249,
+    "ast_hash": "aa1ea0a6afeb8b5fbaa985dd032d7686",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\usuarios\\usuarios.page.ts": {
+    "mtime": 1779467988.5833428,
+    "ast_hash": "27b1250a19e89332a89f6ce5d9a0fdef",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\usuarios\\editar-usuario-modal\\editar-usuario-modal.component.spec.ts": {
+    "mtime": 1779467988.5712502,
+    "ast_hash": "0837c995fa7b41f4d609cfef8fa922d1",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\usuarios\\editar-usuario-modal\\editar-usuario-modal.component.ts": {
+    "mtime": 1779467988.5732508,
+    "ast_hash": "1a298911f54097fdf565f59041dbf2dc",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\usuarios\\usuarios-listado\\usuarios-listado.page.spec.ts": {
+    "mtime": 1779467988.578243,
+    "ast_hash": "dfddc5480f0d92bb8401cbc235dab89c",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\usuarios\\usuarios-listado\\usuarios-listado.page.ts": {
+    "mtime": 1779467988.5792522,
+    "ast_hash": "5857c05c9db290b9690424978f0ec7c4",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\environments\\environment.prod.ts": {
+    "mtime": 1779206426.0,
+    "ast_hash": "7fd27ea280c1655c3317f311a734c151",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\environments\\environment.ts": {
+    "mtime": 1779206420.0,
+    "ast_hash": "8ddf04b2118b5908ffb3858ffc1beca4",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\report.md": {
+    "mtime": 1779728929.231727,
+    "ast_hash": "cf581a1a0f41e8eaa96af528e952d4a0",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\.claude\\skills\\angular-doctor.md": {
+    "mtime": 1779729699.0162225,
+    "ast_hash": "5483eea501bf59bc80f3da549b5b54a4",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\index.html": {
+    "mtime": 1763139064.0,
+    "ast_hash": "415435f4aab79c7528e9c046006501bf",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\components\\app.component.html": {
+    "mtime": 1779467988.540233,
+    "ast_hash": "e54999ea10633532ef810cb9890a5f2a",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\home\\home.page.html": {
+    "mtime": 1779471684.5331433,
+    "ast_hash": "fe4eebdcf6f0cf5dfc58ddf8e1509331",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\inventario\\inventario.page.html": {
+    "mtime": 1779467988.5572472,
+    "ast_hash": "43043cb9386f61db3ad3db8d8ac893c1",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\inventario\\modals\\materia-form\\materia-form.component.html": {
+    "mtime": 1779235954.0,
+    "ast_hash": "598c6be4238c08809a3800852be2e22c",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\inventario\\modals\\movimientos\\movimientos.component.html": {
+    "mtime": 1779211232.0,
+    "ast_hash": "b6e83d9016bc6011fe6a0c54c27eae3e",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\login\\login.page.html": {
+    "mtime": 1779270080.9660008,
+    "ast_hash": "af8d5135264c1a69e2b1aaca6a362d6d",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\ordenes\\ordenes.page.html": {
+    "mtime": 1779473639.446728,
+    "ast_hash": "b40f2acc2e87dad3b07ce2f0c43662e6",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\ordenes\\modals\\crear-orden-modal\\crear-orden-modal.component.html": {
+    "mtime": 1779472166.7828186,
+    "ast_hash": "552509dfe2a9cc2111de67c7c4d938b8",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\productos\\productos.page.html": {
+    "mtime": 1779467988.5632384,
+    "ast_hash": "cb6f4cb35116b21e98f8a471378e5584",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\usuarios\\usuarios.page.html": {
+    "mtime": 1779467988.5802524,
+    "ast_hash": "4452d6f18ab03a96e3848350c0a1311e",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\usuarios\\editar-usuario-modal\\editar-usuario-modal.component.html": {
+    "mtime": 1779467988.5692499,
+    "ast_hash": "00ae6942d1823a27df0b594d0225c72a",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\app\\page\\usuarios\\usuarios-listado\\usuarios-listado.page.html": {
+    "mtime": 1779467988.575251,
+    "ast_hash": "2e6463b736c73066183fc23820a65abd",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\assets\\shapes.svg": {
+    "mtime": 1763139064.0,
+    "ast_hash": "e535ce83da20a4b7719ca3d45195ebd5",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\assets\\icon\\favicon.png": {
+    "mtime": 1763139064.0,
+    "ast_hash": "988be98f12b400c41a22b59b82cfeab6",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\src\\assets\\img\\babka2.png": {
+    "mtime": 1779270074.2687955,
+    "ast_hash": "50d91370ec128a18f46bfa69518ee428",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\.claude\\settings.json": {
+    "mtime": 1779736410.3564243,
+    "ast_hash": "5d6ecd96cf065b16e8bb9fbf5d7d8f0d",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\arbol-proyecto.html": {
+    "mtime": 1779736467.217635,
+    "ast_hash": "1fd3c6b8ea68179f861a5bea0600da10",
+    "semantic_hash": ""
+  },
+  "C:\\Canastapp\\Fronted\\CanastAppF\\CLAUDE.md": {
+    "mtime": 1779736410.3534238,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": ""
+  }
+}
