@@ -42,30 +42,30 @@ const includeProducto = {
 
 // ── GET ALL ──────────────────────────────────────────────
 export const getOrdenes = async (filtros = {}) => {
-  const where = {};
-
-  if (filtros.estado && ESTADOS_VALIDOS.includes(filtros.estado)) {
-    where.estado = filtros.estado;
-  }
-
-  if (filtros.producto_id) {
-    where.producto_id = parseBigIntId(filtros.producto_id, "producto_id");
-  }
+  const where = { /* ... */ };
 
   const ordenes = await prisma.ordenes_produccion.findMany({
     where,
-    include: includeProducto,
+    include: {
+      productos: { select: { id: true, nombre: true, unidad_medida: true, costo_estimado: true } },
+      usuarios: { select: { id: true, nombre_completo: true } },
+      registro_produccion: { select: { cantidad_real_producida: true } },  // ← AGREGAR
+      entregas_producto: { select: { cantidad_entregada: true } }          // ← AGREGAR
+    },
     orderBy: { fecha_creacion: "desc" },
   });
 
-  // Transformar para el frontend
   return ordenes.map(orden => ({
     id: Number(orden.id),
     producto_id: Number(orden.producto_id),
     producto_nombre: orden.productos?.nombre,
     cantidad_planeada: orden.cantidad_solicitada,
-    cantidad_producida: 0,
-    cantidad_entregada: 0,
+    cantidad_producida: orden.registro_produccion?.reduce(
+      (sum, reg) => sum + (reg.cantidad_real_producida || 0), 0
+    ) || 0,  // ← CALCULADO REAL
+    cantidad_entregada: orden.entregas_producto?.reduce(
+      (sum, ent) => sum + (ent.cantidad_entregada || 0), 0
+    ) || 0,  // ← CALCULADO REAL
     estado: orden.estado,
     fecha_inicio: orden.fecha_creacion,
     fecha_fin_estimada: orden.fecha_requerida,
@@ -76,9 +76,7 @@ export const getOrdenes = async (filtros = {}) => {
     created_by: Number(orden.usuario_creador_id),
     creador_nombre: orden.usuarios?.nombre_completo,
     notificado_bodega: orden.notificado_bodega,
-    fecha_cancelacion: orden.fecha_cancelacion,
-    cantidad_solicitada: orden.cantidad_solicitada,
-    fecha_requerida: orden.fecha_requerida
+    fecha_cancelacion: orden.fecha_cancelacion
   }));
 };
 
@@ -323,7 +321,7 @@ export const createOrden = async (data, usuarioId) => {
         orden_produccion_id: orden.id,
         etapa: 'creacion',
         responsable_id: creadorId,
-         accion_realizada: `Cambio de estado de ${orden.estado} a ${nuevoEstado}`,
+        accion_realizada: `Creación de orden de producción en estado ${orden.estado}`,
         observaciones: `Se descontaron ${movimientos.length} materias primas del inventario`
       }
     });
@@ -382,24 +380,12 @@ export const actualizarEstado = async (id, data, usuarioId) => {
     updateData.fecha_cancelacion = new Date();
   }
 
-  // Temporal: quitar include para probar
   const ordenActualizada = await prisma.ordenes_produccion.update({
     where: { id: ordenId },
     data: updateData,
-    // include: includeProducto,  // ← Comentado para probar
   });
 
-  // Registrar en trazabilidad
-  await prisma.trazabilidad_proceso.create({
-    data: {
-      orden_produccion_id: ordenId,
-      etapa: 'cambio_estado',
-      tipo_evento: 'cambio_estado',
-      descripcion: `Estado cambiado de ${orden.estado} a ${nuevoEstado}`,
-      responsable_id: usuarioId && usuarioId !== "postgres" ? parseBigIntId(usuarioId, "usuario_id") : null,
-      datos_adicionales: JSON.stringify({ estado_anterior: orden.estado, estado_nuevo: nuevoEstado })
-    }
-  });
+  // ✅ El trigger se encarga de la trazabilidad automáticamente
 
   return {
     id: Number(ordenActualizada.id),

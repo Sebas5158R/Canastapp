@@ -5,7 +5,7 @@ import { IonicModule, ModalController, AlertController, LoadingController } from
 import { ProductoService } from 'src/app/data/services/producto.service';
 import { OrdenesService } from 'src/app/data/services/ordenes.service';
 import { Producto } from 'src/app/data/interfaces/producto.interface';
-import { RecetaProducto, CreateOrdenRequest } from 'src/app/data/interfaces/orden.interface';
+import { RecetaProducto, CreateOrdenRequest, MateriaPrimaReceta } from 'src/app/data/interfaces/orden.interface';
 
 @Component({
   selector: 'app-crear-orden-modal',
@@ -36,7 +36,7 @@ export class CrearOrdenModalComponent implements OnInit {
     const recetaActual = this.receta();
     const cantidad = this.cantidadSolicitada();
     if (!recetaActual || cantidad <= 0) return false;
-    return recetaActual.ingredientes.every(i => 
+    return recetaActual.ingredientes.every((i: MateriaPrimaReceta) =>
       i.stock_disponible >= (i.cantidad_necesaria * cantidad)
     );
   });
@@ -45,10 +45,10 @@ export class CrearOrdenModalComponent implements OnInit {
     const recetaActual = this.receta();
     const cantidad = this.cantidadSolicitada();
     if (!recetaActual || cantidad <= 0) return [];
-    return recetaActual.ingredientes.filter(i => {
+   return recetaActual.ingredientes.filter((i: MateriaPrimaReceta) => {
       const requerido = i.cantidad_necesaria * cantidad;
       return i.stock_disponible < requerido;
-    }).map(i => ({
+    }).map((i: MateriaPrimaReceta) => ({
       ...i,
       requerido_total: i.cantidad_necesaria * cantidad,
       faltante: (i.cantidad_necesaria * cantidad) - i.stock_disponible

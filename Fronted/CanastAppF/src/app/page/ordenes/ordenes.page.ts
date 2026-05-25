@@ -107,7 +107,7 @@ export class OrdenesPage implements OnInit {
 
   const alert = await this.alertController.create({
     header: 'Cambiar Estado',
-    subHeader: `Orden: ${this.selectedOrden.numero_orden || this.selectedOrden.id}`,
+    subHeader: `Orden: ${this.selectedOrden.id || this.selectedOrden.id}`,
     inputs: estadosDisponibles.map(estado => ({
       name: 'estado',
       type: 'radio' as const,

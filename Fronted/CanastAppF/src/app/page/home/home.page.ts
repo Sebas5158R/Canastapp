@@ -201,7 +201,7 @@ export class HomePage implements OnInit {
         return fechaCreacion.toDateString() === hoy.toDateString();
       });
       
-      const eficienciaPlaneadaHoy = ordenesHoy.reduce((sum, o) => sum + (o.cantidad_planeada || 0), 0);
+      const eficienciaPlaneadaHoy = ordenesHoy.reduce((sum, o) => sum + (o.cantidad_planeada   || 0), 0);
       const eficienciaRealHoy = ordenesHoy.reduce((sum, o) => sum + (o.cantidad_producida || 0), 0);
       const eficienciaPercent = eficienciaPlaneadaHoy > 0 ? (eficienciaRealHoy / eficienciaPlaneadaHoy) * 100 : 0;
       
@@ -362,4 +362,4 @@ export class HomePage implements OnInit {
       event.target.complete();
     }, 1000);
   }
-}
+} 
